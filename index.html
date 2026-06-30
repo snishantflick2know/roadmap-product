@@ -89,7 +89,7 @@
   .meter .lab{font-family:"Space Grotesk";font-weight:600;font-size:14px;white-space:nowrap;color:var(--text)}
   .track{flex:1;height:9px;border-radius:100px;background:#0c0f18;border:1px solid var(--line);overflow:hidden;display:flex}
   .track i{height:100%;display:block;transition:width .5s cubic-bezier(.2,.7,.2,1)}
-  .track .t-done{background:var(--done)} .track .t-prog{background:var(--prog)} .track .t-spill{background:var(--spill)} .track .t-road{background:var(--road)} .track .t-adhoc{background:var(--adhoc)}
+  .track .t-done{background:var(--done)} .track .t-prog{background:var(--prog)} .track .t-spill{background:var(--spill)} .track .t-road{background:var(--road)} .track .t-adhoc{background:var(--adhoc)} .track .t-parked{background:var(--parked)}
   .pct{font-family:"Space Grotesk";font-size:15px;color:var(--text);font-weight:700;font-variant-numeric:tabular-nums;min-width:42px;text-align:right}
 
   .money{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:16px 0 4px}
@@ -350,7 +350,7 @@
       <span><i style="background:var(--road)"></i>Roadmap/Future</span>
       <span><i style="background:var(--adhoc)"></i>Adhoc</span>
       <span><i style="background:var(--parked)"></i>Parked</span>
-      <span><i style="background:var(--carry)"></i>Carryforward (spilled→next)</span>
+      <span><i style="background:var(--carry)"></i>Carryforward (spilled/in-progress→next)</span>
     </div>
     <span>Pulse · FieldAssist — June delivery</span>
   </footer>
@@ -435,14 +435,14 @@ function carriedInto(monthId){
   const prevShort=prev.label.replace(/ \d{4}$/,"");
   const out=[]; // groups: {platform, ws, adhoc, carry:true, tasks:[...]}
   (prev.groups||[]).forEach(g=>{
-    const spilled=(g.tasks||[]).filter(t=>t.state==="spill");
+    const spilled=(g.tasks||[]).filter(t=>t.state==="spill"||t.state==="prog");
     if(!spilled.length) return;
     out.push({
       platform:g.platform, ws:g.ws, adhoc:!!g.adhoc, carry:true,
       tasks:spilled.map(t=>Object.assign({},t,{
         state:"carry",
         _carryFrom:prevShort,
-        _origState:"spill"
+        _origState:t.state
       }))
     });
   });
@@ -571,10 +571,10 @@ function counts(){
 function paintKPIs(){
   const c=counts();
   ["all","done","prog","spill","road","adhoc","parked","carry"].forEach(k=>{const el=document.getElementById("c-"+k);if(el)el.textContent=c[k];});
-  const delivered=c.done+c.adhoc;
+  const delivered=c.done+c.adhoc+c.parked;
   const pct=c.all?Math.round(delivered/c.all*100):0;
   document.getElementById("pct").textContent=pct+"%";
-  const order=[["done",c.done],["adhoc",c.adhoc],["prog",c.prog],["spill",c.spill],["road",c.road]];
+  const order=[["done",c.done],["adhoc",c.adhoc],["parked",c.parked],["prog",c.prog],["spill",c.spill],["road",c.road]];
   document.getElementById("track").innerHTML=order.map(([k,v])=>`<i class="t-${k}" style="width:${c.all?v/c.all*100:0}%"></i>`).join("");
 }
 
@@ -629,7 +629,7 @@ function render(){
 function taskHTML(t){
   const isCarry=t.state==="carry";
   const eta=t.eta?`<span class="chip eta">⏱ ${esc(t.eta)}</span>`:"";
-  const carryChip=isCarry?`<span class="chip carry">↪ spilled from ${esc(t._carryFrom||"prev month")}</span>`:"";
+  const carryChip=isCarry?`<span class="chip carry">↪ ${t._origState==="prog"?"in progress":"spilled"} from ${esc(t._carryFrom||"prev month")}</span>`:"";
   const linkIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
   let linkHost="";
   if(t.link){try{linkHost=new URL(t.link).hostname.replace(/^www\./,"");}catch(e){linkHost=t.link.replace(/^https?:\/\//,"").replace(/\/.*$/,"");}}
