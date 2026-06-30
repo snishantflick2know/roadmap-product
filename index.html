@@ -715,7 +715,7 @@ function renderEditor(){
   });
 }
 function rowHTML(gi,ti,t,stateOpts){
-  return `<div class="ed-row" draggable="true" data-gi="${gi}" data-ti="${ti}">
+  return `<div class="ed-row" draggable="false" data-gi="${gi}" data-ti="${ti}">
     <div class="drag-handle" title="Drag to move to another workstream">⠇</div>
     <div><span class="field-cap lblrow">Task / client</span>
       <input data-g="${gi}" data-t="${ti}" data-k="name" value="${esc(t.name)}" placeholder="Task or client"></div>
@@ -780,14 +780,22 @@ editGroups.addEventListener("click",e=>{
 
 /* ---------- drag-and-drop task moving (edit mode only) ---------- */
 let _dragSrc=null;
+editGroups.addEventListener('mousedown',e=>{
+  const handle=e.target.closest('.drag-handle');
+  if(handle){const row=handle.closest('.ed-row[data-gi]');if(row)row.setAttribute('draggable','true');}
+});
+document.addEventListener('mouseup',()=>{
+  document.querySelectorAll('.ed-row[draggable="true"]').forEach(r=>r.setAttribute('draggable','false'));
+});
 editGroups.addEventListener('dragstart',e=>{
-  const row=e.target.closest('.ed-row[data-gi]');if(!row)return;
-  if(!e.target.closest('.drag-handle')){e.preventDefault();return;}
+  const row=e.target.closest('.ed-row[data-gi]');
+  if(!row||row.getAttribute('draggable')!=='true')return;
   _dragSrc={gi:+row.dataset.gi,ti:+row.dataset.ti};
   row.classList.add('dragging');
   e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','dnd');
 });
 editGroups.addEventListener('dragend',()=>{
+  document.querySelectorAll('.ed-row[draggable="true"]').forEach(r=>r.setAttribute('draggable','false'));
   document.querySelectorAll('.ed-row.dragging,.ed-row.drop-before,.ed-row.drop-after,.ed-rows.drag-over')
     .forEach(el=>el.classList.remove('dragging','drop-before','drop-after','drag-over'));
   _dragSrc=null;
