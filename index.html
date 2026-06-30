@@ -661,8 +661,9 @@ function taskHTML(t){
   if(t.link){try{linkHost=new URL(t.link).hostname.replace(/^www\./,"");}catch(e){linkHost=t.link.replace(/^https?:\/\//,"").replace(/\/.*$/,"");}}
   const link=t.link?`<a href="${esc(t.link)}" target="_blank" rel="noopener" title="${esc(t.link)}">${linkIcon}${esc(linkHost)}</a>`:"";
   const o=money(t.ots),m=money(t.mrr);
-  const otsChip=`<span class="chip ots-grey">OTS ${o!==null?inr(o):'N/A'}</span>`;
-  const mrrChip=`<span class="chip mrr-ink">MRR ${m!==null?inr(m):'N/A'}</span>`;
+  const otsChip=o!==null?`<span class="chip ots-grey">OTS ${inr(o)}</span>`:"";
+  const mrrChip=m!==null?`<span class="chip mrr-ink">MRR ${inr(m)}</span>`:"";
+
   const misc=t.misc?`<div class="t-misc">✎ ${esc(t.misc)}</div>`:"";
   return `<div class="task${isCarry?' is-carry':''}">
     <div class="st"><span class="badge ${CLS[t.state]||'b-prog'}">${LABELS[t.state]||t.state}</span>${carryChip}${eta}</div>
