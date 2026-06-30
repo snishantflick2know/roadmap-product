@@ -330,12 +330,13 @@
       <span class="ed-title">✎ Editing board data</span>
       <span class="spacer"></span>
       <span class="saved" id="savedMsg"></span>
-      <button class="ebtn" id="exportJson" title="Download a JSON snapshot">⤓ Export JSON</button>
+      <button class="ebtn" id="exportJson" title="Export data as data.json — commit this file to git to save your edits">⤓ Export data.json</button>
       <button class="ebtn" id="importJson" title="Load a JSON snapshot">⤒ Import JSON</button>
+      <button class="ebtn" id="reloadFile" title="Discard local browser cache and reload from the committed data.json">↺ Reload from file</button>
       <input type="file" id="importFile" accept="application/json" class="hiddenfile">
       <button class="ebtn warn" id="resetData" title="Restore original June data">↺ Reset to original</button>
     </div>
-    <div class="ed-help">// Tweak any field and the board updates live. Changes auto-save in this browser. Export JSON to back up or share a snapshot with the team.</div>
+    <div class="ed-help">// Edits auto-save in this browser. To persist to git: click "Export data.json" → replace the data.json file in your project → git commit &amp; push.</div>
     <div id="editGroups"></div>
   </div>
 
@@ -412,8 +413,8 @@ const LABELS={done:"Done",prog:"In progress",spill:"Spilled",road:"Roadmap",adho
 const STATES=["done","prog","spill","road","adhoc","parked"];
 const CLS={done:"b-done",prog:"b-prog",spill:"b-spill",road:"b-road",adhoc:"b-adhoc",parked:"b-parked",carry:"b-carry"};
 
-let MONTHS = load();           // ordered array of {id,label,groups}
-let curMonth = MONTHS[0].id;   // selected month id
+let MONTHS = [];               // ordered array of {id,label,groups} — populated by initApp()
+let curMonth = "";             // selected month id
 let fState="all", fPlat="all", fQ="", editing=false;
 
 /* convenience: the groups array for the currently-selected month */
@@ -483,9 +484,24 @@ function normalize(months){
   (months||[]).forEach(m=>{m.groups=m.groups||[];normalizeGroups(m.groups);});
   return months;
 }
-function load(){
+function loadLocal(){
   try{const raw=localStorage.getItem(STORE_KEY);if(raw){const j=JSON.parse(raw);if(Array.isArray(j)&&j.length&&j[0].groups!==undefined)return normalize(j);}}catch(e){}
-  return normalize(clone(MONTHS_SEED));
+  return null;
+}
+async function loadFile(){
+  try{
+    const r=await fetch('data.json?v='+Date.now());
+    if(r.ok){const j=await r.json();if(Array.isArray(j)&&j.length&&j[0].groups!==undefined)return normalize(j);}
+  }catch(e){}
+  return null;
+}
+async function initApp(){
+  let data=loadLocal();
+  if(!data)data=await loadFile();
+  if(!data)data=normalize(clone(MONTHS_SEED));
+  MONTHS=data;
+  curMonth=MONTHS[0].id;
+  syncMonthUI();paintKPIs();paintMoney();render();
 }
 function save(){
   try{localStorage.setItem(STORE_KEY,JSON.stringify(MONTHS));flashSaved();}
@@ -757,7 +773,7 @@ editGroups.addEventListener("click",e=>{
 /* export / import / reset */
 document.getElementById("exportJson").addEventListener("click",()=>{
   const blob=new Blob([JSON.stringify(MONTHS,null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pulse-board.json";a.click();URL.revokeObjectURL(a.href);
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="data.json";a.click();URL.revokeObjectURL(a.href);
 });
 document.getElementById("importJson").addEventListener("click",()=>document.getElementById("importFile").click());
 document.getElementById("importFile").addEventListener("change",e=>{
@@ -772,6 +788,14 @@ document.getElementById("importFile").addEventListener("change",e=>{
 });
 document.getElementById("resetData").addEventListener("click",()=>{
   if(confirm("Restore the original seed data? Your edits in this browser will be replaced.")){MONTHS=clone(MONTHS_SEED);normalize(MONTHS);curMonth=MONTHS[0].id;syncMonthUI();save();renderEditor();refreshAll();}
+});
+document.getElementById("reloadFile").addEventListener("click",async()=>{
+  if(!confirm("Discard local browser edits and reload from the committed data.json?"))return;
+  const data=await loadFile();
+  if(!data){alert("Could not load data.json — make sure the app is served from a web server (not file://).");return;}
+  MONTHS=data;curMonth=MONTHS[0].id;
+  try{localStorage.setItem(STORE_KEY,JSON.stringify(MONTHS));}catch(e){}
+  syncMonthUI();renderEditor();refreshAll();
 });
 
 /* view filters */
@@ -830,8 +854,7 @@ document.getElementById("addMonth").addEventListener("click",()=>{
 });
 
 /* ---------- init ---------- */
-syncMonthUI();
-paintKPIs();paintMoney();render();
+initApp();
 </script>
 </body>
 </html>

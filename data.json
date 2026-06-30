@@ -1,0 +1,92 @@
+[
+  {
+    "id": "2026-06",
+    "label": "June 2026",
+    "groups": [
+      {
+        "platform": "Web",
+        "ws": "GTM Plan — Closure & Implementation",
+        "adhoc": false,
+        "tasks": [
+          {"name":"Vivo","det":"Custom development for 4 KPIs","status":"In progress · CR cost discussed with CS team","state":"prog","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"Haldiram","det":"Demo done; discussion on shifting Power BI → Pulse","status":"Pending","state":"prog","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"Ullas Agarbatti","det":"Poaching · commercial shared","status":"Commercial closed, portal handed over, awaiting final BRD","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"ITC Mantra","det":"Poaching","status":"Demo given, commercial discussed internally, to be shared","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"MARS","det":"Perfect Store KPI scoping & development","status":"Done","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""}
+        ]
+      },
+      {
+        "platform": "Web",
+        "ws": "Web User Analytics — PostHog",
+        "adhoc": false,
+        "tasks": [
+          {"name":"Standard KPI set","det":"Admin KPI board deployed","status":"Deployed","state":"done","eta":"","link":"https://pulse-admin-kpis.netlify.app/","ots":"","mrr":"","users":"","perUser":"","misc":""}
+        ]
+      },
+      {
+        "platform": "Web",
+        "ws": "Upselling Strategy for GTM",
+        "adhoc": false,
+        "tasks": [
+          {"name":"Marketing View for Pulse over Manage Dashboard","det":"Wireframe made, discussed with team","status":"In progress","state":"prog","eta":"Jul W1","link":"https://fieldassist-pulse-demo.netlify.app","ots":"","mrr":"","users":"","perUser":"","misc":""}
+        ]
+      },
+      {
+        "platform": "Web",
+        "ws": "Web Development Roadmap",
+        "adhoc": false,
+        "tasks": [
+          {"name":"Dashboard (ARS)","det":"Discussed with CS team, in build","status":"Spilled — targeted for 1st week","state":"spill","eta":"Jul W1","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"Industry Cohorts & Benchmarking","det":"Internal discussion stage","status":"Not picked — spilled to next 15 days","state":"spill","eta":"+15d","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"RO Dashboard","det":"Region office dashboard","status":"Done","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"Weekly / Bi-weekly Emailers","det":"KPI & business snapshot emails","status":"Not picked — spilled to next 15 days","state":"road","eta":"+15d","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"KPI & Page Configuration for CS Team","det":"Revamped; app-side config also in place","status":"Partially done","state":"prog","eta":"Jul 10","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""}
+        ]
+      },
+      {
+        "platform": "Web",
+        "ws": "Ad-On (Adhoc)",
+        "adhoc": true,
+        "tasks": [
+          {"name":"Scoops","det":"New client tapped & poached","status":"Commercial to be discussed after Jul W1","state":"adhoc","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""}
+        ]
+      },
+      {
+        "platform": "App",
+        "ws": "Configuration Module — Dashboard Level",
+        "adhoc": false,
+        "tasks": [
+          {"name":"Central config for CS team setup","det":"Self-serve dashboard setup for CS","status":"Working — targeted for 1st week","state":"prog","eta":"Jul W1","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"Drag & Drop builder","det":"To be implemented next sprint","status":"Next roadmap","state":"road","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""}
+        ]
+      },
+      {
+        "platform": "App",
+        "ws": "Streamlining Issues & Product Adherence",
+        "adhoc": false,
+        "tasks": [
+          {"name":"Kandhari","det":"Product adherence · issue tracking","status":"Sorted","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"SLMG","det":"Product adherence · issue tracking","status":"Sorted","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"ColPal","det":"Product adherence · issue tracking","status":"Sorted","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"MARS","det":"Product adherence · issue tracking","status":"Sorted","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"Deo Leo / Other Companies","det":"Migration old Analytics App → Pulse App","status":"Pending","state":"prog","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"CCI-NIQ","det":"Product adherence · issue tracking","status":"Sorted","state":"done","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""}
+        ]
+      },
+      {
+        "platform": "App",
+        "ws": "Ad-On (Adhoc)",
+        "adhoc": true,
+        "tasks": [
+          {"name":"Kandhari — 2 subsidiaries","det":"2 new companies onboarded","status":"Done","state":"adhoc","eta":"","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""},
+          {"name":"ColPal Thailand","det":"Onboarding in process","status":"In process · timeline Jul 3","state":"adhoc","eta":"Jul 3","link":"","ots":"","mrr":"","users":"","perUser":"","misc":""}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2026-07",
+    "label": "July 2026",
+    "groups": []
+  }
+]
