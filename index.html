@@ -169,9 +169,8 @@
   .task .body .t-status{color:var(--dim);font-size:12px;margin-top:5px;font-style:italic}
   .task .body .t-misc{color:var(--muted);font-size:12px;margin-top:6px;padding:6px 9px;background:var(--panel-3);border:1px solid var(--line-2);border-radius:7px;font-family:"JetBrains Mono"}
   .task .right{display:flex;flex-direction:column;gap:8px;align-items:flex-end;text-align:right}
-  .task .right a{display:inline-flex;align-items:center;gap:5px;font-family:"Inter";font-weight:600;font-size:11.5px;color:var(--accent);text-decoration:none;background:var(--accent-bg);border:1px solid var(--accent-bd);padding:5px 10px;border-radius:8px;transition:.15s;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
-  .task .right a:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .task .right a svg{flex:0 0 12px}
+  .task-link{display:inline-flex;align-items:center;margin-left:6px;color:var(--dim);opacity:.4;vertical-align:middle;text-decoration:none;transition:.18s;position:relative;top:-1px}
+  .task-link:hover{color:var(--accent);opacity:1}
 
   @media(max-width:820px){.kpis{grid-template-columns:repeat(3,1fr)}.task{grid-template-columns:1fr;gap:10px}.task .right{align-items:flex-start;text-align:left}.task .st{flex-direction:row;flex-wrap:wrap}}
   @media(max-width:520px){.kpis{grid-template-columns:repeat(2,1fr)}.mp-cap{display:none}}
@@ -659,7 +658,7 @@ function taskHTML(t){
   const linkIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
   let linkHost="";
   if(t.link){try{linkHost=new URL(t.link).hostname.replace(/^www\./,"");}catch(e){linkHost=t.link.replace(/^https?:\/\//,"").replace(/\/.*$/,"");}}
-  const link=t.link?`<a href="${esc(t.link)}" target="_blank" rel="noopener" title="${esc(t.link)}">${linkIcon}${esc(linkHost)}</a>`:"";
+  const link=t.link?`<a class="task-link" href="${esc(t.link)}" target="_blank" rel="noopener" title="${esc(linkHost||t.link)}">${linkIcon}</a>`:"";  
   const o=money(t.ots),m=money(t.mrr);
   const otsChip=o!==null?`<span class="chip ots-grey">OTS ${inr(o)}</span>`:"";
   const mrrChip=m!==null?`<span class="chip mrr-ink">MRR ${inr(m)}</span>`:"";
@@ -667,8 +666,8 @@ function taskHTML(t){
   const misc=t.misc?`<div class="t-misc">✎ ${esc(t.misc)}</div>`:"";
   return `<div class="task${isCarry?' is-carry':''}">
     <div class="st"><span class="badge ${CLS[t.state]||'b-prog'}">${LABELS[t.state]||t.state}</span>${carryChip}${eta}</div>
-    <div class="body"><div class="t-name">${esc(t.name)}</div><div class="t-det">${esc(t.det)}</div><div class="t-status">${esc(t.status)}</div>${misc}</div>
-    <div class="right">${otsChip}${mrrChip}${link}</div></div>`;
+    <div class="body"><div class="t-name">${esc(t.name)}${link}</div><div class="t-det">${esc(t.det)}</div><div class="t-status">${esc(t.status)}</div>${misc}</div>
+    <div class="right">${otsChip}${mrrChip}</div></div>`;
 }
 
 /* ---------- EDIT panel ---------- */
