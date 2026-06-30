@@ -338,13 +338,13 @@
       <span class="ed-title">✎ Editing board data</span>
       <span class="spacer"></span>
       <span class="saved" id="savedMsg"></span>
-      <button class="ebtn" id="exportJson" title="Export data as data.json — commit this file to git to save your edits">⤓ Export data.json</button>
-      <button class="ebtn" id="importJson" title="Load a JSON snapshot">⤒ Import JSON</button>
+      <button class="ebtn" id="exportJson" title="Exports ALL months in one file. Upload this same file to restore everything.">⤓ Export all months</button>
+      <button class="ebtn" id="importJson" title="Upload a previously exported file to restore all months at once">⤒ Import all months</button>
       <button class="ebtn" id="reloadFile" title="Discard local browser cache and reload from the committed data.json">↺ Reload from file</button>
       <input type="file" id="importFile" accept="application/json" class="hiddenfile">
       <button class="ebtn warn" id="resetData" title="Restore original June data">↺ Reset to original</button>
     </div>
-    <div class="ed-help">// Edits auto-save in this browser. To persist to git: click "Export data.json" → replace the data.json file in your project → git commit &amp; push.</div>
+    <div class="ed-help">// Edits auto-save in this browser. Export = all months in one file. Import = upload that same file to restore all months. To persist: replace data.json in project → git commit &amp; push.</div>
     <div id="editGroups"></div>
   </div>
 
@@ -898,6 +898,7 @@ editGroups.addEventListener('drop',e=>{
 document.getElementById("exportJson").addEventListener("click",()=>{
   const blob=new Blob([JSON.stringify(MONTHS,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="data.json";a.click();URL.revokeObjectURL(a.href);
+  const m=document.getElementById("savedMsg");if(m){m.textContent=`✓ exported ${MONTHS.length} month${MONTHS.length!==1?'s':''}`;setTimeout(()=>m.textContent="",2500);}
 });
 document.getElementById("importJson").addEventListener("click",()=>document.getElementById("importFile").click());
 document.getElementById("importFile").addEventListener("change",e=>{
