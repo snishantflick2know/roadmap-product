@@ -296,7 +296,6 @@
       <div class="mlbl">One-Time Setup (OTS) · cumulative</div>
       <div class="mval" id="m-ots">—</div>
       <div class="mbreak">
-        <span class="m-cf-row"><span class="mtag cf">Carried fwd</span><span id="m-ots-cf">₹0</span></span>
         <span class="mrow2"><span class="mtag tm">This month</span><span id="m-ots-tm">₹0</span></span>
       </div>
       <div class="mhint" id="m-ots-h">0 priced</div>
@@ -305,7 +304,6 @@
       <div class="mlbl">Monthly Recurring (MRR) · cumulative</div>
       <div class="mval" id="m-mrr">—</div>
       <div class="mbreak">
-        <span class="m-cf-row"><span class="mtag cf">Carried fwd</span><span id="m-mrr-cf">₹0</span></span>
         <span class="mrow2"><span class="mtag tm">This month</span><span id="m-mrr-tm">₹0</span></span>
       </div>
       <div class="mhint" id="m-mrr-h">0 priced</div>
@@ -314,7 +312,6 @@
       <div class="mlbl">Annualised (ARR · MRR×12) · cumulative</div>
       <div class="mval" id="m-arr">—</div>
       <div class="mbreak">
-        <span class="m-cf-row"><span class="mtag cf">Carried fwd</span><span id="m-arr-cf">₹0</span></span>
         <span class="mrow2"><span class="mtag tm">This month</span><span id="m-arr-tm">₹0</span></span>
       </div>
       <div class="mhint">derived from cumulative MRR</div>
@@ -573,15 +570,9 @@ function paintMoney(){
   document.getElementById("m-ots").textContent=r.cum.otsN?inr(r.cum.ots):"N/A";
   document.getElementById("m-mrr").textContent=r.cum.mrrN?inr(r.cum.mrr):"N/A";
   document.getElementById("m-arr").textContent=r.cum.mrrN?inr(r.cum.mrr*12):"N/A";
-  // breakdown: carried + this month
-  document.getElementById("m-ots-cf").textContent=inr(r.prior.ots);
   document.getElementById("m-ots-tm").textContent=inr(r.cur.ots);
-  document.getElementById("m-mrr-cf").textContent=inr(r.prior.mrr);
   document.getElementById("m-mrr-tm").textContent=inr(r.cur.mrr);
-  document.getElementById("m-arr-cf").textContent=inr(r.prior.mrr*12);
   document.getElementById("m-arr-tm").textContent=inr(r.cur.mrr*12);
-  // toggle visibility of carried-forward line
-  document.querySelectorAll(".m-cf-row").forEach(el=>el.style.display=hasPrior?"flex":"none");
   document.getElementById("m-ots-h").textContent=`${r.cum.otsN} priced · cumulative to ${curLabel()}`;
   document.getElementById("m-mrr-h").textContent=`${r.cum.mrrN} priced · cumulative to ${curLabel()}`;
 }
