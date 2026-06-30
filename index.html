@@ -220,10 +220,16 @@
   .iconbtn:hover{color:var(--text)}
   .iconbtn.del:hover{color:var(--spill);border-color:var(--spill-bd)}
 
-  .ed-row{display:grid;grid-template-columns:135px 1.2fr 1.3fr 115px 105px 1.2fr 110px 34px;gap:9px;padding:10px 16px;border-bottom:1px solid var(--line);align-items:start}
+  .ed-row{display:grid;grid-template-columns:135px 1.2fr 1.3fr 115px 105px 1.2fr 110px 34px;gap:9px;padding:10px 16px 10px 28px;border-bottom:1px solid var(--line);align-items:start;position:relative}
   .ed-row:last-child{border-bottom:none}
   .ed-row .lblrow{display:none}
   .ed-row textarea{resize:vertical;min-height:38px;line-height:1.4}
+  .drag-handle{position:absolute;left:6px;top:11px;cursor:grab;color:var(--dim);font-size:15px;user-select:none;line-height:1;transition:.14s}
+  .drag-handle:hover{color:var(--muted)}
+  .ed-row.dragging{opacity:.3}
+  .ed-row.drop-before{box-shadow:0 -2px 0 var(--accent)}
+  .ed-row.drop-after{box-shadow:0 2px 0 var(--accent)}
+  .ed-rows.drag-over{background:rgba(124,140,255,.07);border-radius:4px}
   .ed-addrow{padding:11px 16px}
   .addbtn{width:100%;font-family:"JetBrains Mono";font-size:12px;color:var(--muted);background:none;border:1px dashed var(--line-2);border-radius:9px;padding:10px;cursor:pointer;transition:.15s}
   .addbtn:hover{color:var(--done);border-color:var(--done-bd);background:var(--done-bg)}
@@ -233,6 +239,7 @@
     .ed-row{grid-template-columns:1fr;gap:7px;padding:14px 16px}
     .ed-row .lblrow{display:block}
     .ed-grp-hd{grid-template-columns:1fr;gap:8px}
+    .drag-handle{display:none}
   }
   .hiddenfile{display:none}
 </style>
@@ -698,7 +705,7 @@ function renderEditor(){
             <button class="iconbtn del" title="Delete workstream" data-act="delgrp" data-g="${gi}">✕</button>
           </div>
         </div>
-        <div class="ed-rows">${g.tasks.map((t,ti)=>rowHTML(gi,ti,t,stateOpts)).join("")}</div>
+        <div class="ed-rows" data-gi="${gi}">${g.tasks.map((t,ti)=>rowHTML(gi,ti,t,stateOpts)).join("")}</div>
         <div class="ed-addrow"><button class="addbtn" data-act="addrow" data-g="${gi}">+ Add task</button></div>`;
       body.appendChild(grp);
       g.tasks.forEach((t,ti)=>{const s=grp.querySelector(`select[data-g="${gi}"][data-t="${ti}"][data-k="state"]`);if(s)s.value=t.state;});
@@ -708,7 +715,8 @@ function renderEditor(){
   });
 }
 function rowHTML(gi,ti,t,stateOpts){
-  return `<div class="ed-row">
+  return `<div class="ed-row" draggable="true" data-gi="${gi}" data-ti="${ti}">
+    <div class="drag-handle" title="Drag to move to another workstream">⠇</div>
     <div><span class="field-cap lblrow">Task / client</span>
       <input data-g="${gi}" data-t="${ti}" data-k="name" value="${esc(t.name)}" placeholder="Task or client"></div>
     <div><span class="field-cap lblrow">Details</span>
@@ -767,6 +775,50 @@ editGroups.addEventListener("click",e=>{
     const swapWith=act==="up"?sib[pos-1]:sib[pos+1];
     if(swapWith!==undefined){[G[gi],G[swapWith]]=[G[swapWith],G[gi]];}
   }
+  save();renderEditor();refreshAll();
+});
+
+/* ---------- drag-and-drop task moving (edit mode only) ---------- */
+let _dragSrc=null;
+editGroups.addEventListener('dragstart',e=>{
+  const row=e.target.closest('.ed-row[data-gi]');if(!row)return;
+  if(!e.target.closest('.drag-handle')){e.preventDefault();return;}
+  _dragSrc={gi:+row.dataset.gi,ti:+row.dataset.ti};
+  row.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','dnd');
+});
+editGroups.addEventListener('dragend',()=>{
+  document.querySelectorAll('.ed-row.dragging,.ed-row.drop-before,.ed-row.drop-after,.ed-rows.drag-over')
+    .forEach(el=>el.classList.remove('dragging','drop-before','drop-after','drag-over'));
+  _dragSrc=null;
+});
+editGroups.addEventListener('dragover',e=>{
+  if(!_dragSrc)return;e.preventDefault();e.dataTransfer.dropEffect='move';
+  document.querySelectorAll('.ed-row.drop-before,.ed-row.drop-after,.ed-rows.drag-over')
+    .forEach(el=>el.classList.remove('drop-before','drop-after','drag-over'));
+  const row=e.target.closest('.ed-row[data-gi]');
+  const rows=e.target.closest('.ed-rows[data-gi]');
+  if(row&&!row.classList.contains('dragging')){
+    const r=row.getBoundingClientRect();
+    row.classList.add(e.clientY<r.top+r.height/2?'drop-before':'drop-after');
+  }else if(rows){rows.classList.add('drag-over');}
+});
+editGroups.addEventListener('drop',e=>{
+  e.preventDefault();if(!_dragSrc)return;
+  const G=activeGroups();
+  const row=e.target.closest('.ed-row[data-gi]');
+  const rows=e.target.closest('.ed-rows[data-gi]');
+  let tgi,tti;
+  if(row&&!row.classList.contains('dragging')){
+    tgi=+row.dataset.gi;tti=+row.dataset.ti;
+    const r=row.getBoundingClientRect();
+    if(e.clientY>=r.top+r.height/2)tti++;
+  }else if(rows){tgi=+rows.dataset.gi;tti=G[tgi].tasks.length;}
+  else return;
+  if(tgi===_dragSrc.gi&&(tti===_dragSrc.ti||tti===_dragSrc.ti+1))return;
+  const[task]=G[_dragSrc.gi].tasks.splice(_dragSrc.ti,1);
+  if(tgi===_dragSrc.gi&&tti>_dragSrc.ti)tti--;
+  G[tgi].tasks.splice(tti,0,task);
   save();renderEditor();refreshAll();
 });
 
