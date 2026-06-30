@@ -1,0 +1,10 @@
+{
+  "name": "pulse-delivery-board",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pulse Analytics monthly delivery board — single-file static HTML app (Web/App workstreams, status tags, OTS/MRR, carryforward).",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  }
+}
