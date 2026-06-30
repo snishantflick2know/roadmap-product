@@ -309,12 +309,12 @@
       <div class="mhint" id="m-mrr-h">0 priced</div>
     </div>
     <div class="mcard m-arr">
-      <div class="mlbl">Annualised (ARR · MRR×12) · cumulative</div>
+      <div class="mlbl">ARR · MRR × months to Mar '27 + OTS</div>
       <div class="mval" id="m-arr">—</div>
       <div class="mbreak">
-        <span class="mrow2"><span class="mtag tm">This month</span><span id="m-arr-tm">₹0</span></span>
+        <span class="mrow2"><span class="mtag tm">MRR×</span><span id="m-arr-months">0 mo</span></span>
       </div>
-      <div class="mhint">derived from cumulative MRR</div>
+      <div class="mhint" id="m-arr-h">cur MRR × remaining months + cum OTS</div>
     </div>
   </div>
 
@@ -569,10 +569,16 @@ function paintMoney(){
   // cumulative headline
   document.getElementById("m-ots").textContent=r.cum.otsN?inr(r.cum.ots):"N/A";
   document.getElementById("m-mrr").textContent=r.cum.mrrN?inr(r.cum.mrr):"N/A";
-  document.getElementById("m-arr").textContent=r.cum.mrrN?inr(r.cum.mrr*12):"N/A";
+  // ARR = current month MRR × months remaining to March 2027 + cumulative OTS
+  const [cy,cm2]=(curMonth||"2026-07").split("-").map(Number);
+  const endY=2027,endM=3;
+  const monthsLeft=Math.max(0,(endY-cy)*12+(endM-cm2)+1);
+  const arr=r.cur.mrrN?(r.cur.mrr*monthsLeft)+r.cum.ots:null;
+  document.getElementById("m-arr").textContent=arr!==null?inr(arr):"N/A";
+  document.getElementById("m-arr-months").textContent=`${monthsLeft} mo remaining`;
+  document.getElementById("m-arr-h").textContent=`${inr(r.cur.mrr)} × ${monthsLeft} mo + OTS ${inr(r.cum.ots)}`;
   document.getElementById("m-ots-tm").textContent=inr(r.cur.ots);
   document.getElementById("m-mrr-tm").textContent=inr(r.cur.mrr);
-  document.getElementById("m-arr-tm").textContent=inr(r.cur.mrr*12);
   document.getElementById("m-ots-h").textContent=`${r.cum.otsN} priced · cumulative to ${curLabel()}`;
   document.getElementById("m-mrr-h").textContent=`${r.cum.mrrN} priced · cumulative to ${curLabel()}`;
 }
