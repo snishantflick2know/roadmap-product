@@ -230,6 +230,9 @@
   .ed-row.drop-before{box-shadow:0 -2px 0 var(--accent)}
   .ed-row.drop-after{box-shadow:0 2px 0 var(--accent)}
   .ed-rows.drag-over{background:rgba(124,140,255,.07);border-radius:4px}
+  .ed-carry-grp{border-color:var(--carry-bd)}
+  .ed-carry-grp .ed-grp-hd{background:linear-gradient(180deg,rgba(240,168,48,.09),rgba(240,168,48,.04))}
+  .carry-badge{display:inline-block;font-family:"JetBrains Mono";font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:var(--carry);background:var(--carry-bg);border:1px solid var(--carry-bd);padding:3px 8px;border-radius:5px;margin-top:5px}
   .ed-addrow{padding:11px 16px}
   .addbtn{width:100%;font-family:"JetBrains Mono";font-size:12px;color:var(--muted);background:none;border:1px dashed var(--line-2);border-radius:9px;padding:10px;cursor:pointer;transition:.15s}
   .addbtn:hover{color:var(--done);border-color:var(--done-bd);background:var(--done-bg)}
@@ -711,6 +714,34 @@ function renderEditor(){
       g.tasks.forEach((t,ti)=>{const s=grp.querySelector(`select[data-g="${gi}"][data-t="${ti}"][data-k="state"]`);if(s)s.value=t.state;});
     });
 
+    // Carryforward groups from previous month
+    const mIdx=monthIndex(curMonth);
+    if(mIdx>0){
+      const prevM=MONTHS[mIdx-1];
+      const prevShort=prevM.label.replace(/ \d{4}$/,"");
+      carriedInto(curMonth).filter(cg=>cg.platform===plat).forEach(cg=>{
+        const pgi=prevM.groups.findIndex(g=>g.platform===cg.platform&&g.ws===cg.ws);
+        if(pgi===-1)return;
+        const pg=prevM.groups[pgi];
+        const carryTasks=pg.tasks.map((t,pti)=>({t,pti})).filter(({t})=>t.state==="spill"||t.state==="prog");
+        if(!carryTasks.length)return;
+        const cgrp=document.createElement("div");cgrp.className="ed-grp ed-carry-grp";
+        cgrp.innerHTML=`
+          <div class="ed-grp-hd">
+            <div class="ghd-name">
+              <span class="field-cap">${esc(cg.ws)}</span>
+              <span class="carry-badge">↪ Carried from ${esc(prevShort)} · edits update ${esc(prevShort)}</span>
+            </div>
+          </div>
+          <div class="ed-rows">${carryTasks.map(({t,pti})=>carryRowHTML(prevM.id,pgi,pti,t,stateOpts)).join("")}</div>`;
+        body.appendChild(cgrp);
+        carryTasks.forEach(({t,pti})=>{
+          const s=cgrp.querySelector(`select[data-g="${pgi}"][data-t="${pti}"][data-k="state"]`);
+          if(s)s.value=t.state;
+        });
+      });
+    }
+
     root.appendChild(tile);
   });
 }
@@ -740,20 +771,53 @@ function rowHTML(gi,ti,t,stateOpts){
   </div>`;
 }
 
+function carryRowHTML(prevMonthId,pgi,pti,t,stateOpts){
+  return `<div class="ed-row" draggable="false" data-gi="${pgi}" data-ti="${pti}">
+    <div style="align-self:start;padding-top:10px;color:var(--carry);font-size:13px" title="Editing updates ${prevMonthId}">↪</div>
+    <div><span class="field-cap lblrow">Task / client</span>
+      <input data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="name" value="${esc(t.name)}" placeholder="Task or client"></div>
+    <div><span class="field-cap lblrow">Details</span>
+      <textarea data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="det" placeholder="Short detail">${esc(t.det)}</textarea></div>
+    <div><span class="field-cap lblrow">Status note</span>
+      <textarea data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="status" placeholder="Free-text status">${esc(t.status)}</textarea></div>
+    <div><span class="field-cap lblrow">State</span>
+      <select data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="state">${stateOpts}</select>
+      <input style="margin-top:6px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="eta" value="${esc(t.eta||"")}" placeholder="ETA e.g. Jul 10"></div>
+    <div><span class="field-cap lblrow">OTS (₹)</span>
+      <input data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="ots" value="${esc(t.ots||"")}" placeholder="N/A" inputmode="decimal"></div>
+    <div><span class="field-cap lblrow">MRR (₹)</span>
+      <input data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="mrr" value="${esc(t.mrr||"")}" placeholder="N/A" inputmode="decimal">
+      <input style="margin-top:6px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="users" value="${esc(t.users||"")}" placeholder="Users count" inputmode="numeric">
+      <input style="margin-top:6px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="perUser" value="${esc(t.perUser||"")}" placeholder="Per-user cost" inputmode="decimal"></div>
+    <div><span class="field-cap lblrow">Miscellaneous</span>
+      <textarea data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="misc" placeholder="Notes — free text">${esc(t.misc||"")}</textarea></div>
+    <div><span class="field-cap lblrow">Link</span>
+      <input data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="link" value="${esc(t.link||"")}" placeholder="https://"></div>
+    <div></div>
+  </div>`;
+}
+
 function refreshAll(){paintKPIs();paintMoney();render();}
 const editGroups=document.getElementById("editGroups");
 editGroups.addEventListener("input",e=>{
   const el=e.target;if(el.dataset.g===undefined)return;
-  const G=activeGroups();const gi=+el.dataset.g,k=el.dataset.k;
+  const cm=el.dataset.cm;
+  const G=cm?(MONTHS.find(x=>x.id===cm)||{}).groups:activeGroups();
+  if(!G)return;
+  const gi=+el.dataset.g,k=el.dataset.k;
   if(el.dataset.t!==undefined){G[gi].tasks[+el.dataset.t][k]=el.value;}
   else{G[gi][k]=el.value;if(k==="ws")G[gi].adhoc=/adhoc|ad-?on/i.test(el.value);}
   save();paintKPIs();paintMoney();render();
 });
 editGroups.addEventListener("change",e=>{
   const el=e.target;if(el.tagName!=="SELECT"||el.dataset.g===undefined)return;
-  const G=activeGroups();const gi=+el.dataset.g,k=el.dataset.k;
+  const cm=el.dataset.cm;
+  const G=cm?(MONTHS.find(x=>x.id===cm)||{}).groups:activeGroups();
+  if(!G)return;
+  const gi=+el.dataset.g,k=el.dataset.k;
   if(el.dataset.t!==undefined){G[gi].tasks[+el.dataset.t][k]=el.value;}else{G[gi][k]=el.value;}
   save();refreshAll();
+  if(cm)renderEditor();
 });
 editGroups.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]");if(!b)return;
