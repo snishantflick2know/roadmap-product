@@ -747,6 +747,10 @@ function renderEditor(){
               <span class="field-cap">${esc(cg.ws)}</span>
               <span class="carry-badge">↪ Carried from ${esc(prevShort)} · edits update ${esc(prevShort)}</span>
             </div>
+            <div class="ghd-act">
+              <button class="iconbtn" title="Move up" data-act="up" data-g="${pgi}" data-cm="${prevM.id}">↑</button>
+              <button class="iconbtn" title="Move down" data-act="down" data-g="${pgi}" data-cm="${prevM.id}">↓</button>
+            </div>
           </div>
           <div class="ed-rows">${carryTasks.map(({t,pti})=>carryRowHTML(prevM.id,pgi,pti,t,stateOpts)).join("")}</div>
           <div class="ed-addrow"><button class="addbtn" data-act="addrow-carry" data-plat="${esc(cg.platform)}" data-ws="${esc(cg.ws)}">+ Add new ${curLabel()} task here</button></div>`;
@@ -837,12 +841,16 @@ editGroups.addEventListener("change",e=>{
 });
 editGroups.addEventListener("click",e=>{
   const b=e.target.closest("[data-act]");if(!b)return;
-  const act=b.dataset.act;const G=activeGroups();
+  const act=b.dataset.act;
+  const cm=b.dataset.cm;
+  const G=cm?(MONTHS.find(x=>x.id===cm)||{}).groups:activeGroups();
+  if(!G)return;
   if(act==="addrow-carry"){
     const plat=b.dataset.plat,ws=b.dataset.ws;
-    let gi=G.findIndex(g=>g.platform===plat&&g.ws===ws);
-    if(gi===-1){G.push({platform:plat,ws,adhoc:false,tasks:[]});gi=G.length-1;}
-    G[gi].tasks.push({name:"New task",det:"",status:"",state:"prog",eta:"",ots:"",mrr:"",users:"",perUser:"",misc:"",link:""});
+    const CG=activeGroups();
+    let gi=CG.findIndex(g=>g.platform===plat&&g.ws===ws);
+    if(gi===-1){CG.push({platform:plat,ws,adhoc:false,tasks:[]});gi=CG.length-1;}
+    CG[gi].tasks.push({name:"New task",det:"",status:"",state:"prog",eta:"",ots:"",mrr:"",users:"",perUser:"",misc:"",link:""});
     save();renderEditor();refreshAll();return;
   }
   if(act==="addgrp-plat"){
