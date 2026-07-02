@@ -2,9 +2,13 @@
   "name": "pulse-delivery-board",
   "version": "1.0.0",
   "private": true,
-  "description": "Pulse Analytics monthly delivery board — single-file static HTML app (Web/App workstreams, status tags, OTS/MRR, carryforward).",
+  "type": "module",
+  "description": "Pulse Analytics monthly delivery board with Neon DB persistence.",
   "scripts": {
     "dev": "npx serve .",
     "start": "npx serve ."
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
   }
 }

@@ -545,21 +545,45 @@ async function loadFile(){
   return null;
 }
 async function initApp(){
-  let data=loadLocal();
+  let data=null;
+  // 1. Try Neon (cloud)
+  try{
+    const res=await fetch("/api/data");
+    if(res.ok){
+      const json=await res.json();
+      if(Array.isArray(json)&&json.length){
+        data=normalize(json);
+        try{localStorage.setItem(STORE_KEY,JSON.stringify(json));}catch(e){}
+      }
+    }
+  }catch(e){}
+  // 2. Fall back to localStorage
+  if(!data)data=loadLocal();
+  // 3. Fall back to data.json seed
   if(!data)data=await loadFile();
+  // 4. Fall back to hardcoded seed
   if(!data)data=normalize(clone(MONTHS_SEED));
   MONTHS=data;
   curMonth=MONTHS[0].id;
-  syncMonthUI();paintKPIs();paintMoney();render();
+  syncMonthUI();paintKPIs();paintMoney();render();renderRevenueTasks();
 }
 function save(){
-  try{localStorage.setItem(STORE_KEY,JSON.stringify(MONTHS));flashSaved();}
-  catch(e){document.getElementById("savedMsg").textContent="// storage off — use Export JSON to keep changes";}
+  try{localStorage.setItem(STORE_KEY,JSON.stringify(MONTHS));}catch(e){}
+  syncToNeon();
+}
+async function syncToNeon(){
+  const m=document.getElementById("savedMsg");
+  if(m)m.textContent="↑ saving…";
+  try{
+    const res=await fetch("/api/data",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(MONTHS)});
+    if(res.ok){flashSaved("✓ saved to cloud");}
+    else{flashSaved("✓ saved locally");}
+  }catch(e){flashSaved("✓ saved locally");}
 }
 let savedT;
-function flashSaved(){
-  const m=document.getElementById("savedMsg");if(!m)return;m.textContent="✓ saved";
-  clearTimeout(savedT);savedT=setTimeout(()=>m.textContent="",1600);
+function flashSaved(msg="✓ saved"){
+  const m=document.getElementById("savedMsg");if(!m)return;m.textContent=msg;
+  clearTimeout(savedT);savedT=setTimeout(()=>m.textContent="",2200);
 }
 
 /* parse a money cell → number or null (N/A). Accepts "150000", "1,50,000", "₹2.5L", "1.2cr", "90k" */
