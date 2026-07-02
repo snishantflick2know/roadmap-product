@@ -335,6 +335,8 @@
         <div class="mhint" id="m-arr-h">cur MRR × remaining months + cum OTS</div>
       </div>
     </div>
+    <div class="sec-hd" style="margin-top:28px"><span class="sec-lbl">Revenue tasks</span></div>
+    <div id="revenue-tasks"></div>
   </div>
 
   <!-- ===== ROADMAP TAB ===== -->
@@ -649,6 +651,35 @@ const ICON_WEB='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stro
 const ICON_APP='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>';
 function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 
+function renderRevenueTasks(){
+  const root=document.getElementById("revenue-tasks");if(!root)return;
+  root.innerHTML="";
+  const DG=displayGroups();
+  let shown=0;
+  ["Web","App"].forEach(plat=>{
+    const groups=DG.filter(g=>g.platform===plat).map(g=>{
+      const tasks=g.tasks.filter(t=>t.segment==="revenue");
+      return {...g,tasks};
+    }).filter(g=>g.tasks.length);
+    if(!groups.length)return;
+    shown+=groups.reduce((s,g)=>s+g.tasks.length,0);
+    const sec=document.createElement("div");sec.className="plat "+plat.toLowerCase();
+    const icon=plat==="Web"?ICON_WEB:ICON_APP;
+    const total=groups.reduce((s,g)=>s+g.tasks.length,0);
+    sec.innerHTML=`<div class="plat-hd"><span class="plat-icon">${icon}</span><div class="plat-titles"><span class="plat-name">${plat}</span><span class="plat-kicker">${plat==="Web"?"Browser / dashboard delivery":"Mobile app delivery"}</span></div><span class="count">${groups.length} workstream${groups.length>1?"s":""} · ${total} task${total>1?"s":""}</span></div><div class="plat-groups"></div>`;
+    const host=sec.querySelector(".plat-groups");
+    groups.forEach(g=>{
+      const mc={};g.tasks.forEach(t=>mc[t.state]=(mc[t.state]||0)+1);
+      const mini=Object.entries(mc).filter(([,v])=>v).map(([k,v])=>`<b class="mb-${k}">${v} ${LABELS[k]}</b>`).join("");
+      const ws=document.createElement("div");ws.className="ws";
+      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div><div class="ws-body">${g.tasks.map(taskHTML).join("")}</div>`;
+      ws.querySelector(".ws-hd").addEventListener("click",()=>ws.classList.toggle("collapsed"));
+      host.appendChild(ws);
+    });
+    root.appendChild(sec);
+  });
+  if(!shown)root.innerHTML=`<div style="color:var(--dim);font-family:'Inter';font-size:13px;padding:20px 0">No tasks tagged as Revenue yet. Switch to Edit data and set Section = Revenue on any task.</div>`;
+}
 function render(){
   const root=document.getElementById("boards");root.innerHTML="";let shown=0;
   const DG=displayGroups();
@@ -656,6 +687,7 @@ function render(){
     if(fPlat!=="all"&&fPlat!==plat) return;
     const groups=DG.filter(g=>g.platform===plat).map(g=>{
       const tasks=g.tasks.filter(t=>{
+        if(t.segment==="revenue") return false;
         if(fState!=="all"&&t.state!==fState) return false;
         if(fQ){const hay=(t.name+" "+t.det+" "+t.status+" "+g.ws).toLowerCase();if(!hay.includes(fQ)) return false;}
         return true;
@@ -827,7 +859,9 @@ function carryRowHTML(prevMonthId,pgi,pti,t,stateOpts){
       <textarea data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="status" placeholder="Free-text status">${esc(t.status)}</textarea></div>
     <div><span class="field-cap lblrow">State</span>
       <select data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="state">${stateOpts}</select>
-      <input style="margin-top:6px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="eta" value="${esc(t.eta||"")}" placeholder="ETA e.g. Jul 10"></div>
+      <input style="margin-top:6px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="eta" value="${esc(t.eta||"")}" placeholder="ETA e.g. Jul 10">
+      <span class="field-cap lblrow" style="margin-top:8px;display:block">Section</span>
+      <select style="margin-top:4px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="segment"><option value="roadmap"${(t.segment||'roadmap')==='roadmap'?' selected':''}>Roadmap</option><option value="revenue"${t.segment==='revenue'?' selected':''}>Revenue</option></select></div>
     <div><span class="field-cap lblrow">OTS (₹)</span>
       <input data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="ots" value="${esc(t.ots||"")}" placeholder="N/A" inputmode="decimal"></div>
     <div><span class="field-cap lblrow">MRR (₹)</span>
@@ -842,7 +876,7 @@ function carryRowHTML(prevMonthId,pgi,pti,t,stateOpts){
   </div>`;
 }
 
-function refreshAll(){paintKPIs();paintMoney();render();}
+function refreshAll(){paintKPIs();paintMoney();render();renderRevenueTasks();}
 const editGroups=document.getElementById("editGroups");
 editGroups.addEventListener("input",e=>{
   const el=e.target;if(el.dataset.g===undefined)return;
@@ -852,7 +886,7 @@ editGroups.addEventListener("input",e=>{
   const gi=+el.dataset.g,k=el.dataset.k;
   if(el.dataset.t!==undefined){G[gi].tasks[+el.dataset.t][k]=el.value;}
   else{G[gi][k]=el.value;if(k==="ws")G[gi].adhoc=/adhoc|ad-?on/i.test(el.value);}
-  save();paintKPIs();paintMoney();render();
+  save();paintKPIs();paintMoney();render();renderRevenueTasks();
 });
 editGroups.addEventListener("change",e=>{
   const el=e.target;if(el.tagName!=="SELECT"||el.dataset.g===undefined)return;
@@ -875,16 +909,16 @@ editGroups.addEventListener("click",e=>{
     const CG=activeGroups();
     let gi=CG.findIndex(g=>g.platform===plat&&g.ws===ws);
     if(gi===-1){CG.push({platform:plat,ws,adhoc:false,tasks:[]});gi=CG.length-1;}
-    CG[gi].tasks.push({name:"New task",det:"",status:"",state:"prog",eta:"",ots:"",mrr:"",users:"",perUser:"",misc:"",link:""});
+    CG[gi].tasks.push({name:"New task",det:"",status:"",state:"prog",eta:"",ots:"",mrr:"",users:"",perUser:"",misc:"",link:"",segment:"roadmap"});
     save();renderEditor();refreshAll();return;
   }
   if(act==="addgrp-plat"){
     const plat=b.dataset.plat;
-    G.push({platform:plat,ws:"New workstream",adhoc:false,tasks:[{name:"New task",det:"",status:"",state:"prog",eta:"",ots:"",mrr:"",users:"",perUser:"",misc:"",link:""}]});
+    G.push({platform:plat,ws:"New workstream",adhoc:false,tasks:[{name:"New task",det:"",status:"",state:"prog",eta:"",ots:"",mrr:"",users:"",perUser:"",misc:"",link:"",segment:"roadmap"}]});
     save();renderEditor();refreshAll();return;
   }
   const gi=+b.dataset.g;
-  if(act==="addrow"){G[gi].tasks.push({name:"New task",det:"",status:"",state:"prog",eta:"",ots:"",mrr:"",users:"",perUser:"",misc:"",link:""});}
+  if(act==="addrow"){G[gi].tasks.push({name:"New task",det:"",status:"",state:"prog",eta:"",ots:"",mrr:"",users:"",perUser:"",misc:"",link:"",segment:"roadmap"});}
   else if(act==="delrow"){G[gi].tasks.splice(+b.dataset.t,1);}
   else if(act==="delgrp"){if(!confirm("Delete this whole workstream?"))return;G.splice(gi,1);}
   else if(act==="swap"){G[gi].platform=G[gi].platform==="Web"?"App":"Web";}
