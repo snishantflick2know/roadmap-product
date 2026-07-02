@@ -1,14 +1,4 @@
 {
-  "cleanUrls": true,
-  "functions": {
-    "api/data.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "routes": [
-    { "src": "/api/data", "dest": "/api/data.js" },
-    { "src": "/(.*)", "dest": "/$1" }
-  ],
   "headers": [
     {
       "source": "/(.*)",
