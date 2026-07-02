@@ -787,8 +787,8 @@ function taskHTML(t){
     <div class="st"><span class="badge ${CLS[t.state]||'b-prog'}">${LABELS[t.state]||t.state}</span>${carryChip}</div>
     <div><div class="t-name">${esc(t.name)}</div>${link}</div>
     <div class="t-det">${esc(t.det)}</div>
-    <div class="t-status-col">${esc(t.status)}${eta?("<div style="margin-top:5px">" +eta+"</div>"):""}</div>
-    <div class="t-extra">${otsChip}${mrrChip?("<div style="margin-top:4px">" +mrrChip+"</div>"):""}${misc}</div>
+    <div class="t-status-col">${esc(t.status)}${eta?("<div style='margin-top:5px'>"+eta+"</div>"):""}</div>
+    <div class="t-extra">${otsChip}${mrrChip?("<div style='margin-top:4px'>"+mrrChip+"</div>"):""}${misc}</div>
   </div>`;
 }
 
