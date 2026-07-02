@@ -568,13 +568,20 @@ function sumGroups(groups){
   });
   return {ots,mrr,otsN,mrrN,total};
 }
-/* P&L rollup: headline = ALL months total (P&L irrespective of selected month), cur = selected month only */
+/* P&L rollup: headline = ALL months total; ARR = Σ(month_MRR × months_remaining_to_Mar27) + total OTS */
 function moneyRollup(){
   const idx=monthIndex(curMonth);
-  let all={ots:0,mrr:0,otsN:0,mrrN:0,total:0};
-  MONTHS.forEach(m=>{const s=sumGroups(m.groups);all.ots+=s.ots;all.mrr+=s.mrr;all.otsN+=s.otsN;all.mrrN+=s.mrrN;all.total+=s.total;});
+  const endY=2027,endM=3;
+  let all={ots:0,mrr:0,otsN:0,mrrN:0,total:0},arrContrib=0;
+  MONTHS.forEach(m=>{
+    const s=sumGroups(m.groups);
+    all.ots+=s.ots;all.mrr+=s.mrr;all.otsN+=s.otsN;all.mrrN+=s.mrrN;all.total+=s.total;
+    const [my,mm]=m.id.split("-").map(Number);
+    const mLeft=Math.max(0,(endY-my)*12+(endM-mm)+1);
+    arrContrib+=s.mrr*mLeft;
+  });
   const cur=sumGroups(activeGroups());
-  return {cur,cum:all,idx};
+  return {cur,cum:all,arrContrib,idx};
 }
 function paintMoney(){
   const r=moneyRollup();
@@ -582,14 +589,11 @@ function paintMoney(){
   // cumulative headline
   document.getElementById("m-ots").textContent=r.cum.otsN?inr(r.cum.ots):"N/A";
   document.getElementById("m-mrr").textContent=r.cum.mrrN?inr(r.cum.mrr):"N/A";
-  // ARR = current month MRR × months remaining to March 2027 + cumulative OTS
-  const [cy,cm2]=(curMonth||"2026-07").split("-").map(Number);
-  const endY=2027,endM=3;
-  const monthsLeft=Math.max(0,(endY-cy)*12+(endM-cm2)+1);
-  const arr=r.cum.mrrN?(r.cum.mrr*monthsLeft)+r.cum.ots:null;
+  // ARR = Σ(each month's MRR × months remaining from that month to Mar 2027) + total OTS
+  const arr=r.cum.mrrN?r.arrContrib+r.cum.ots:null;
   document.getElementById("m-arr").textContent=arr!==null?inr(arr):"N/A";
-  document.getElementById("m-arr-months").textContent=`${monthsLeft} mo remaining`;
-  document.getElementById("m-arr-h").textContent=`MRR ${inr(r.cum.mrr)} × ${monthsLeft} mo + OTS ${inr(r.cum.ots)}`;
+  document.getElementById("m-arr-months").textContent=`Σ MRR × mo`;
+  document.getElementById("m-arr-h").textContent=`Σ(each month MRR × remaining mo to Mar '27) + OTS ${inr(r.cum.ots)}`;
   document.getElementById("m-ots-tm").textContent=inr(r.cur.ots);
   document.getElementById("m-mrr-tm").textContent=inr(r.cur.mrr);
   document.getElementById("m-ots-h").textContent=`${r.cum.otsN} priced · all months total`;
