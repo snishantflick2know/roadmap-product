@@ -777,31 +777,31 @@ function render(){
 /* build ws colBar+tasks HTML with dynamic columns based on data presence */
 function wsTasksHTML(g){
   const cols=g.cols||DEFAULT_COLS;
+  const hasEta=g.tasks.some(t=>t.eta&&t.eta.trim());
   const hasOts=g.tasks.some(t=>money(t.ots)!==null);
   const hasMrr=g.tasks.some(t=>money(t.mrr)!==null);
   const hasRemark=g.tasks.some(t=>t.misc&&t.misc.trim());
-  // fixed cols: badge(110px) client(1.2fr) details(1.5fr) status(1.3fr) eta(110px)
-  let gridCols="110px 1.2fr 1.5fr 1.3fr 130px";
+  let gridCols="110px 1.2fr 1.5fr 1.3fr";
+  if(hasEta) gridCols+=" 130px";
   if(hasOts) gridCols+=" 90px";
   if(hasMrr) gridCols+=" 100px";
   if(hasRemark) gridCols+=" 1fr";
-  // header spans: empty(badge) + col0..3 always, then optional
   let hdr='<span></span>';
   hdr+='<span>'+esc(cols[0]||'')+'</span>';
   hdr+='<span>'+esc(cols[1]||'')+'</span>';
   hdr+='<span>'+esc(cols[2]||'')+'</span>';
-  hdr+='<span>'+esc(cols[3]||'')+'</span>';
+  if(hasEta) hdr+='<span>'+esc(cols[3]||'')+'</span>';
   if(hasOts) hdr+='<span>'+esc(cols[4]||'')+'</span>';
   if(hasMrr) hdr+='<span>'+esc(cols[5]||'')+'</span>';
   if(hasRemark) hdr+='<span>'+esc(cols[6]||'')+'</span>';
   const colBar='<div class="ws-col-hd" style="grid-template-columns:'+gridCols+'">'+hdr+'</div>';
-  const taskRows=g.tasks.map(t=>taskHTMLDyn(t,hasOts,hasMrr,hasRemark,gridCols)).join("");
+  const taskRows=g.tasks.map(t=>taskHTMLDyn(t,hasEta,hasOts,hasMrr,hasRemark,gridCols)).join("");
   return colBar+'<div class="ws-body">'+taskRows+'</div>';
 }
-function taskHTMLDyn(t,hasOts,hasMrr,hasRemark,gridCols){
+function taskHTMLDyn(t,hasEta,hasOts,hasMrr,hasRemark,gridCols){
   const isCarry=t.state==="carry";
   const eta=t.eta?'<span class="chip eta">&#x23F1; '+esc(t.eta)+'</span>':"";
-  const carryChip=isCarry?'<span class="chip carry">&#x21AA; '+( t._origState==="prog"?"in progress":"spilled")+' from '+esc(t._carryFrom||"prev month")+'</span>':"";
+  const carryChip=isCarry?'<span class="chip carry">&#x21AA; '+(t._origState==="prog"?"in progress":"spilled")+' from '+esc(t._carryFrom||"prev month")+'</span>':"";
   const linkIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
   let linkHost="";
   if(t.link){try{linkHost=new URL(t.link).hostname.replace(/^www\./,"");}catch(e){linkHost=t.link.replace(/^https?:\/\//,"").replace(/\/.*$/,"");}}
@@ -811,11 +811,11 @@ function taskHTMLDyn(t,hasOts,hasMrr,hasRemark,gridCols){
   const mrrChip=m!==null?'<span class="chip mrr-ink">MRR '+inr(m)+'</span>':"";
   const misc=t.misc?("\u270e "+esc(t.misc)):"";
   let html='<div class="task state-'+(t.state||"prog")+(isCarry?" is-carry":"")+'" style="grid-template-columns:'+gridCols+'">';
-  html+='<div class="st"><span class="badge '+(CLS[t.state]||"b-prog")+'">'+(LABELS[t.state]||t.state)+'</span>'+carryChip+'</div>';
+  html+='<div class="st"><span class="badge '+(CLS[t.state]||"b-prog")+'">'+( LABELS[t.state]||t.state)+'</span>'+carryChip+'</div>';
   html+='<div class="t-name-col"><div class="t-name">'+esc(t.name)+'</div>'+link+'</div>';
   html+='<div class="t-det">'+esc(t.det)+'</div>';
   html+='<div class="t-status-col">'+esc(t.status)+'</div>';
-  html+='<div class="t-eta-col">'+eta+'</div>';
+  if(hasEta) html+='<div class="t-eta-col">'+eta+'</div>';
   if(hasOts) html+='<div class="t-ots">'+otsChip+'</div>';
   if(hasMrr) html+='<div class="t-mrr">'+mrrChip+'</div>';
   if(hasRemark) html+='<div class="t-remark">'+misc+'</div>';
