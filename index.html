@@ -718,7 +718,6 @@ function renderRevenueTasks(){
       const mc={};g.tasks.forEach(t=>mc[t.state]=(mc[t.state]||0)+1);
       const mini=Object.entries(mc).filter(([,v])=>v).map(([k,v])=>`<b class="mb-${k}">${v} ${LABELS[k]}</b>`).join("");
       const ws=document.createElement("div");ws.className="ws";
-      const ws=document.createElement("div");ws.className="ws";
       ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div><div class="ws-inner">${wsTasksHTML(g)}</div>`;
       // (colBar2 removed — wsTasksHTML handles it)
       ws.querySelector(".ws-hd").addEventListener("click",()=>ws.classList.toggle("collapsed"));
@@ -755,7 +754,6 @@ function render(){
     groups.forEach(g=>{
       const mc={done:0,prog:0,spill:0,road:0,adhoc:0,parked:0,carry:0};g.tasks.forEach(t=>mc[t.state]=(mc[t.state]||0)+1);
       const mini=Object.entries(mc).filter(([,v])=>v).map(([k,v])=>`<b class="mb-${k}">${v} ${LABELS[k]}</b>`).join("");
-      const ws=document.createElement("div");ws.className="ws";
       const ws=document.createElement("div");ws.className="ws";
       ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div><div class="ws-inner">${wsTasksHTML(g)}</div>`;
       // (colBar removed — wsTasksHTML handles it)
