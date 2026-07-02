@@ -9,35 +9,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0d16; --bg-2:#0e1220; --panel:#141925; --panel-2:#1b2130; --panel-3:#242c3e;
-    --line:rgba(255,255,255,.06); --line-2:rgba(255,255,255,.11); --line-3:rgba(255,255,255,.18);
-    --text:#eef1f8; --muted:#9aa3bd; --dim:#6b7591;
-    --ink:#eef1f8; --ink-soft:#9aa3bd; --ink-line:rgba(255,255,255,.08);
-    --shadow:0 1px 2px rgba(0,0,0,.20),0 8px 24px rgba(0,0,0,.28);
-    --shadow-lg:0 2px 6px rgba(0,0,0,.24),0 18px 50px rgba(0,0,0,.40);
+    --bg:#f4f6fb; --bg-2:#eef1f8; --panel:#ffffff; --panel-2:#f0f4fc; --panel-3:#e4eaf6;
+    --line:rgba(0,0,0,.07); --line-2:rgba(0,0,0,.10); --line-3:rgba(0,0,0,.16);
+    --text:#0d1120; --muted:#4f5b7a; --dim:#8a93b0;
+    --ink:#0d1120; --ink-soft:#4f5b7a; --ink-line:rgba(0,0,0,.06);
+    --shadow:0 1px 2px rgba(0,0,0,.07),0 6px 20px rgba(0,0,0,.09);
+    --shadow-lg:0 2px 6px rgba(0,0,0,.10),0 16px 44px rgba(0,0,0,.14);
     /* status — the ONLY place saturated color lives at full strength */
-    --done:#34d399;  --done-bg:rgba(52,211,153,.13);  --done-bd:rgba(52,211,153,.32);
-    --prog:#fbbf4c;  --prog-bg:rgba(251,191,76,.13);  --prog-bd:rgba(251,191,76,.32);
-    --spill:#fb7185; --spill-bg:rgba(251,113,133,.13); --spill-bd:rgba(251,113,133,.32);
-    --road:#60a5fa;  --road-bg:rgba(96,165,250,.13);  --road-bd:rgba(96,165,250,.32);
-    --adhoc:#94a3b8; --adhoc-bg:rgba(148,163,184,.14); --adhoc-bd:rgba(148,163,184,.32);
-    --carry:#f0a830; --carry-bg:rgba(240,168,48,.13);  --carry-bd:rgba(240,168,48,.36);
-    --parked:#a78bfa; --parked-bg:rgba(167,139,250,.13); --parked-bd:rgba(167,139,250,.34);
+    --done:#0fa86a;  --done-bg:rgba(15,168,106,.10);  --done-bd:rgba(15,168,106,.28);
+    --prog:#d97706;  --prog-bg:rgba(217,119,6,.10);  --prog-bd:rgba(217,119,6,.28);
+    --spill:#e03050; --spill-bg:rgba(224,48,80,.09); --spill-bd:rgba(224,48,80,.26);
+    --road:#2563eb;  --road-bg:rgba(37,99,235,.09);  --road-bd:rgba(37,99,235,.26);
+    --adhoc:#64748b; --adhoc-bg:rgba(100,116,139,.10); --adhoc-bd:rgba(100,116,139,.28);
+    --carry:#b45309; --carry-bg:rgba(180,83,9,.10);  --carry-bd:rgba(180,83,9,.30);
+    --parked:#7c3aed; --parked-bg:rgba(124,58,237,.10); --parked-bd:rgba(124,58,237,.28);
     /* platform identity is MONOCHROME — told apart by icon, not hue */
-    --web:#e7ebf5; --web-soft:rgba(231,235,245,.07);
-    --app:#aab2c8; --app-soft:rgba(170,178,200,.09);
+    --web:#334155; --web-soft:rgba(51,65,85,.05);
+    --app:#475569; --app-soft:rgba(71,85,105,.06);
     /* one signature interactive accent */
-    --accent:#7c8cff; --accent-bg:rgba(124,140,255,.15); --accent-bd:rgba(124,140,255,.48);
+    --accent:#4f6ef7; --accent-bg:rgba(79,110,247,.10); --accent-bd:rgba(79,110,247,.36);
     --r:13px; --r-lg:18px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{font-family:"Inter",system-ui,sans-serif;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
-    background:radial-gradient(1100px 580px at 86% -12%,rgba(124,140,255,.08),transparent 58%),
-      radial-gradient(900px 520px at -8% 4%,rgba(52,211,153,.05),transparent 56%),var(--bg);min-height:100vh}
+    background:radial-gradient(1100px 580px at 86% -12%,rgba(79,110,247,.05),transparent 58%),
+      radial-gradient(900px 520px at -8% 4%,rgba(15,168,106,.04),transparent 56%),var(--bg);min-height:100vh}
   .wrap{max-width:1280px;margin:0 auto;padding:0 26px}
 
-  header{position:sticky;top:0;z-index:60;background:rgba(10,13,22,.80);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-2)}
+  header{position:sticky;top:0;z-index:60;background:rgba(244,246,251,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-2)}
   .hd{display:flex;align-items:center;gap:16px;height:64px}
   .logo{display:flex;align-items:center;gap:10px;font-family:"Space Grotesk";font-weight:700;font-size:17px;color:var(--ink)}
   .pdot{width:10px;height:10px;border-radius:50%;background:var(--done);position:relative}
@@ -238,11 +238,11 @@
   .ed-grp{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
   .ed-grp-hd{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 16px;background:var(--panel-3);border-bottom:1px solid var(--line);align-items:end}
   .ed-grp-hd select,.ed-grp-hd input,.ed-row input,.ed-row select,.ed-row textarea{
-    font-family:"Inter";font-size:13px;color:var(--text);background:#0e1016;border:1px solid var(--line-2);border-radius:8px;padding:8px 10px;outline:none;width:100%;transition:.14s}
+    font-family:"Inter";font-size:13px;color:var(--text);background:var(--panel);border:1px solid var(--line-2);border-radius:8px;padding:8px 10px;outline:none;width:100%;transition:.14s}
   .ed-grp-hd input:focus,.ed-row input:focus,.ed-row select:focus,.ed-row textarea:focus{border-color:var(--accent-bd)}
   .ed-grp-hd .ghd-name input{font-family:"Space Grotesk";font-weight:600}
   .ed-grp-hd .ghd-act{display:flex;gap:6px}
-  .iconbtn{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;border:1px solid var(--line-2);background:#0e1016;color:var(--muted);cursor:pointer;transition:.14s;font-size:14px}
+  .iconbtn{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;border:1px solid var(--line-2);background:var(--panel);color:var(--muted);cursor:pointer;transition:.14s;font-size:14px}
   .iconbtn:hover{color:var(--text)}
   .iconbtn.del:hover{color:var(--spill);border-color:var(--spill-bd)}
 
