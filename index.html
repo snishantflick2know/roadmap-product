@@ -66,6 +66,8 @@
   .kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(124,140,255,.18)}
   h1{font-family:"Space Grotesk";font-weight:700;font-size:clamp(30px,5vw,48px);letter-spacing:-1.4px;line-height:1.02;color:var(--text)}
   .sub{color:var(--muted);margin-top:14px;max-width:600px;font-size:15px;line-height:1.55}
+  .month-note{font-family:"Inter";font-size:12px;font-weight:500;color:var(--dim);margin-top:10px;display:none}
+  .month-note.show{display:block}
 
   .kpis{display:grid;grid-template-columns:repeat(8,1fr);gap:9px;margin:26px 0 6px}
   @media(max-width:1200px){.kpis{grid-template-columns:repeat(4,1fr)}}
@@ -288,6 +290,7 @@
     <div class="kicker">Internal · Leadership View</div>
     <h1>Pulse Product &amp; Delivery Status</h1>
     <p class="sub">Live delivery status across Web and App workstreams — what shipped, what's in progress, spilled tasks, and the revenue snapshot for this cycle.</p>
+    <p class="month-note" id="month-note"></p>
   </div>
 
   <div class="sec-hd"><span class="sec-lbl">Delivery status</span></div>
@@ -990,6 +993,9 @@ function syncMonthUI(){
   const sel=document.getElementById("monthSel");
   sel.innerHTML=MONTHS.map(m=>`<option value="${m.id}">${esc(m.label)}</option>`).join("");
   sel.value=curMonth;
+  const note=document.getElementById("month-note");
+  if(note){const notes={"2026-06":"14th June onwards"};const txt=notes[curMonth]||"";note.textContent=txt?`— ${txt}`:"";
+  note.classList.toggle("show",!!txt);}
 }
 document.getElementById("monthSel").addEventListener("change",e=>{
   curMonth=e.target.value;
