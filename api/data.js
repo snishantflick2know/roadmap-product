@@ -1,6 +1,6 @@
-import { neon } from '@neondatabase/serverless';
+const { neon } = require('@neondatabase/serverless');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (!process.env.DATABASE_URL) {
     return res.status(500).json({ error: 'DATABASE_URL not configured' });
   }

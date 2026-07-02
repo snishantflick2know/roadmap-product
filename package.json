@@ -2,7 +2,6 @@
   "name": "pulse-delivery-board",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "description": "Pulse Analytics monthly delivery board with Neon DB persistence.",
   "scripts": {
     "dev": "npx serve .",
