@@ -52,9 +52,9 @@
   .mp-add{width:30px;align-self:stretch;border:none;border-left:1px solid var(--line-2);background:transparent;color:var(--muted);font-size:17px;line-height:1;cursor:pointer;transition:.15s}
   .mp-add:hover{color:var(--accent);background:var(--accent-bg)}
   .month b{color:var(--text)}
-  .editToggle{position:fixed;bottom:28px;right:28px;z-index:200;display:inline-flex;align-items:center;gap:8px;font-family:"Inter";font-weight:600;font-size:13px;color:var(--text);
-    background:var(--panel);border:1px solid var(--line-2);padding:10px 18px;border-radius:100px;cursor:pointer;transition:.16s;user-select:none;box-shadow:0 4px 20px rgba(0,0,0,.14)}
-  .editToggle:hover{border-color:var(--accent-bd);box-shadow:0 6px 28px rgba(0,0,0,.18)}
+  .editToggle{display:inline-flex;align-items:center;gap:8px;font-family:"Inter";font-weight:600;font-size:13px;color:var(--text);
+    background:var(--panel);border:1px solid var(--line-2);padding:8px 14px;border-radius:10px;cursor:pointer;transition:.16s;user-select:none;box-shadow:var(--shadow)}
+  .editToggle:hover{border-color:var(--accent-bd)}
   .editToggle.on{color:var(--accent);background:var(--accent-bg);border-color:var(--accent-bd)}
   .editToggle .sw{width:30px;height:17px;border-radius:100px;background:var(--panel-3);border:1px solid var(--line-2);position:relative;transition:.16s}
   .editToggle .sw::after{content:"";position:absolute;top:1px;left:1px;width:13px;height:13px;border-radius:50%;background:var(--muted);transition:.16s}
@@ -285,6 +285,9 @@
         <button id="addMonth" class="mp-add" title="Add a new month">+</button>
       </div>
       <span id="month-note-hd" style="font-family:'Inter';font-size:11px;font-weight:500;color:var(--dim);display:none"></span>
+      <div class="editToggle" id="editToggle" title="Toggle data editing">
+        <span class="sw"></span><span id="editLabel">Edit data</span>
+      </div>
     </div>
   </div>
 </header>
@@ -554,8 +557,13 @@ async function initApp(){
       }
     }
   }catch(e){}
-  // 2. Fall back to localStorage
-  if(!data)data=loadLocal();
+  // 2. Fall back to localStorage — and if found, push it to Neon (one-time migration)
+  if(!data){
+    data=loadLocal();
+    if(data){
+      fetch("/api/data",{method:"POST",headers:{"Content-Type":"application/json"},body:localStorage.getItem(STORE_KEY)}).catch(()=>{});
+    }
+  }
   // 3. Fall back to data.json seed
   if(!data)data=await loadFile();
   // 4. Fall back to hardcoded seed
@@ -1106,8 +1114,5 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
 initApp();
 </script>
 
-<div class="editToggle" id="editToggle" title="Toggle data editing">
-  <span class="sw"></span><span id="editLabel">Edit data</span>
-</div>
 </body>
 </html>
