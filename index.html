@@ -586,10 +586,10 @@ function paintMoney(){
   const [cy,cm2]=(curMonth||"2026-07").split("-").map(Number);
   const endY=2027,endM=3;
   const monthsLeft=Math.max(0,(endY-cy)*12+(endM-cm2)+1);
-  const arr=r.cur.mrrN?(r.cur.mrr*monthsLeft)+r.cum.ots:null;
+  const arr=r.cum.mrrN?(r.cum.mrr*monthsLeft)+r.cum.ots:null;
   document.getElementById("m-arr").textContent=arr!==null?inr(arr):"N/A";
   document.getElementById("m-arr-months").textContent=`${monthsLeft} mo remaining`;
-  document.getElementById("m-arr-h").textContent=`${inr(r.cur.mrr)} × ${monthsLeft} mo + OTS ${inr(r.cum.ots)}`;
+  document.getElementById("m-arr-h").textContent=`MRR ${inr(r.cum.mrr)} × ${monthsLeft} mo + OTS ${inr(r.cum.ots)}`;
   document.getElementById("m-ots-tm").textContent=inr(r.cur.ots);
   document.getElementById("m-mrr-tm").textContent=inr(r.cur.mrr);
   document.getElementById("m-ots-h").textContent=`${r.cum.otsN} priced · all months total`;
