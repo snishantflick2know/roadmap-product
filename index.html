@@ -156,7 +156,8 @@
   .mini b{font-family:"Inter";font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px}
   .mb-done{color:var(--done);background:var(--done-bg)} .mb-prog{color:var(--prog);background:var(--prog-bg)} .mb-spill{color:var(--spill);background:var(--spill-bg)} .mb-road{color:var(--road);background:var(--road-bg)} .mb-adhoc{color:var(--adhoc);background:var(--adhoc-bg)} .mb-parked{color:var(--parked);background:var(--parked-bg)}
   .ws-body{border-top:1px solid var(--line)}
-  .ws.collapsed .ws-body{display:none}
+  .ws-inner{display:block}
+  .ws.collapsed .ws-inner{display:none}
 
   .task{display:grid;grid-template-columns:110px 1.1fr 1.4fr 1.2fr 1fr;gap:0 16px;padding:13px 18px;border-bottom:1px solid var(--line);align-items:start;transition:.12s}
   .task:last-child{border-bottom:none}
@@ -715,7 +716,7 @@ function renderRevenueTasks(){
       const ws=document.createElement("div");ws.className="ws";
       const cols2=g.cols||DEFAULT_COLS;
       const colBar2=`<div class="ws-col-hd"><span>${esc(cols2[0]||'')}</span><span>${esc(cols2[1]||'')}</span><span>${esc(cols2[2]||'')}</span><span>${esc(cols2[3]||'')}</span><span>${esc(cols2[4]||'')}</span></div>`;
-      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div>${colBar2}<div class="ws-body">${g.tasks.map(taskHTML).join("")}</div>`;
+      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div><div class="ws-inner">${colBar2}<div class="ws-body">${g.tasks.map(taskHTML).join("")}</div></div>`;
       ws.querySelector(".ws-hd").addEventListener("click",()=>ws.classList.toggle("collapsed"));
       host.appendChild(ws);
     });
@@ -753,7 +754,7 @@ function render(){
       const ws=document.createElement("div");ws.className="ws";
       const cols=g.cols||DEFAULT_COLS;
       const colBar=`<div class="ws-col-hd"><span>${esc(cols[0]||'')}</span><span>${esc(cols[1]||'')}</span><span>${esc(cols[2]||'')}</span><span>${esc(cols[3]||'')}</span><span>${esc(cols[4]||'')}</span></div>`;
-      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div>${colBar}<div class="ws-body">${g.tasks.map(taskHTML).join("")}</div>`;
+      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div><div class="ws-inner">${colBar}<div class="ws-body">${g.tasks.map(taskHTML).join("")}</div></div>`;
       ws.querySelector(".ws-hd").addEventListener("click",()=>ws.classList.toggle("collapsed"));
       host.appendChild(ws);
     });
