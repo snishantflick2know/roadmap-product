@@ -568,14 +568,13 @@ function sumGroups(groups){
   });
   return {ots,mrr,otsN,mrrN,total};
 }
-/* cumulative rollup: this month + all earlier months (straight sum of OTS & MRR) */
+/* P&L rollup: headline = ALL months total (P&L irrespective of selected month), cur = selected month only */
 function moneyRollup(){
   const idx=monthIndex(curMonth);
-  let prior={ots:0,mrr:0,otsN:0,mrrN:0,total:0};
-  for(let i=0;i<idx;i++){const s=sumGroups(MONTHS[i].groups);prior.ots+=s.ots;prior.mrr+=s.mrr;prior.otsN+=s.otsN;prior.mrrN+=s.mrrN;prior.total+=s.total;}
+  let all={ots:0,mrr:0,otsN:0,mrrN:0,total:0};
+  MONTHS.forEach(m=>{const s=sumGroups(m.groups);all.ots+=s.ots;all.mrr+=s.mrr;all.otsN+=s.otsN;all.mrrN+=s.mrrN;all.total+=s.total;});
   const cur=sumGroups(activeGroups());
-  const cum={ots:prior.ots+cur.ots,mrr:prior.mrr+cur.mrr,otsN:prior.otsN+cur.otsN,mrrN:prior.mrrN+cur.mrrN,total:prior.total+cur.total};
-  return {prior,cur,cum,idx};
+  return {cur,cum:all,idx};
 }
 function paintMoney(){
   const r=moneyRollup();
@@ -593,8 +592,8 @@ function paintMoney(){
   document.getElementById("m-arr-h").textContent=`${inr(r.cur.mrr)} × ${monthsLeft} mo + OTS ${inr(r.cum.ots)}`;
   document.getElementById("m-ots-tm").textContent=inr(r.cur.ots);
   document.getElementById("m-mrr-tm").textContent=inr(r.cur.mrr);
-  document.getElementById("m-ots-h").textContent=`${r.cum.otsN} priced · cumulative to ${curLabel()}`;
-  document.getElementById("m-mrr-h").textContent=`${r.cum.mrrN} priced · cumulative to ${curLabel()}`;
+  document.getElementById("m-ots-h").textContent=`${r.cum.otsN} priced · all months total`;
+  document.getElementById("m-mrr-h").textContent=`${r.cum.mrrN} priced · all months total`;
 }
 function curLabel(){const m=MONTHS.find(x=>x.id===curMonth);return m?m.label.replace(/ \d{4}$/,""):"";}
 
