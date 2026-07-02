@@ -244,8 +244,15 @@
   .iconbtn.del:hover{color:var(--spill);border-color:var(--spill-bd)}
 
   .ed-col-hd{display:grid;grid-template-columns:135px 1.2fr 1.3fr 115px 105px 1.2fr 110px 34px;gap:9px;padding:6px 16px 6px 28px;background:var(--panel-3);border-bottom:1px solid var(--line-2)}
-  .ed-col-hd span{font-family:"Inter";font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ed-col-hd input{font-family:"Inter";font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--accent)!important;background:transparent!important;border:1px dashed transparent!important;border-radius:4px!important;padding:3px 5px!important;width:100%;transition:.14s}
+  .ed-col-hd input:hover{border-color:var(--accent-bd)!important;background:var(--accent-bg)!important}
+  .ed-col-hd input:focus{border-color:var(--accent-bd)!important;background:var(--panel)!important;outline:none}
   @media(max-width:920px){.ed-col-hd{display:none}}
+  /* read-view: workstream column header bar */
+  .ws-col-hd{display:flex;gap:0;padding:6px 18px;background:var(--panel-3);border-bottom:1px solid var(--line-2)}
+  .ws-col-hd span{font-family:"Inter";font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+  .ws-col-hd span:first-child{flex:0 0 116px}
+  @media(max-width:820px){.ws-col-hd{display:none}}
   .ed-row{display:grid;grid-template-columns:135px 1.2fr 1.3fr 115px 105px 1.2fr 110px 34px;gap:9px;padding:10px 16px 10px 28px;border-bottom:1px solid var(--line);align-items:start;position:relative}
   .ed-row:last-child{border-bottom:none}
   .ed-row .lblrow{display:none}
@@ -519,14 +526,19 @@ function displayGroups(){
 }
 
 function clone(x){return JSON.parse(JSON.stringify(x))}
+const DEFAULT_COLS=["Task / Client","Details","Status Note","State · ETA","OTS (₹)","MRR (₹) · Users","Misc / Notes"];
 function normalizeGroups(arr){
-  (arr||[]).forEach(g=>{(g.tasks||[]).forEach(t=>{
-    if(t.ots===undefined)t.ots="";
-    if(t.mrr===undefined)t.mrr="";
-    if(t.users===undefined)t.users="";
-    if(t.perUser===undefined)t.perUser="";
-    if(t.misc===undefined)t.misc="";
-  });});
+  (arr||[]).forEach(g=>{
+    if(!g.cols)g.cols=DEFAULT_COLS.slice();
+    while(g.cols.length<DEFAULT_COLS.length)g.cols.push(DEFAULT_COLS[g.cols.length]);
+    (g.tasks||[]).forEach(t=>{
+      if(t.ots===undefined)t.ots="";
+      if(t.mrr===undefined)t.mrr="";
+      if(t.users===undefined)t.users="";
+      if(t.perUser===undefined)t.perUser="";
+      if(t.misc===undefined)t.misc="";
+    });
+  });
   return arr;
 }
 function normalize(months){
@@ -701,7 +713,8 @@ function renderRevenueTasks(){
       const mc={};g.tasks.forEach(t=>mc[t.state]=(mc[t.state]||0)+1);
       const mini=Object.entries(mc).filter(([,v])=>v).map(([k,v])=>`<b class="mb-${k}">${v} ${LABELS[k]}</b>`).join("");
       const ws=document.createElement("div");ws.className="ws";
-      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div><div class="ws-body">${g.tasks.map(taskHTML).join("")}</div>`;
+      const colBar2=g.cols&&g.cols.some((c,i)=>c&&c!==DEFAULT_COLS[i])?`<div class="ws-col-hd"><span>${esc(g.cols[0]||'')}</span><span>${esc(g.cols[1]||'')}</span><span>${esc(g.cols[2]||'')}</span></div>`:'';
+      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div>${colBar2}<div class="ws-body">${g.tasks.map(taskHTML).join("")}</div>`;
       ws.querySelector(".ws-hd").addEventListener("click",()=>ws.classList.toggle("collapsed"));
       host.appendChild(ws);
     });
@@ -737,8 +750,8 @@ function render(){
       const mc={done:0,prog:0,spill:0,road:0,adhoc:0,parked:0,carry:0};g.tasks.forEach(t=>mc[t.state]=(mc[t.state]||0)+1);
       const mini=Object.entries(mc).filter(([,v])=>v).map(([k,v])=>`<b class="mb-${k}">${v} ${LABELS[k]}</b>`).join("");
       const ws=document.createElement("div");ws.className="ws";
-      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div>
-        <div class="ws-body">${g.tasks.map(taskHTML).join("")}</div>`;
+      const colBar=g.cols&&g.cols.some((c,i)=>c&&c!==DEFAULT_COLS[i])?`<div class="ws-col-hd"><span>${esc(g.cols[0]||'')}</span><span>${esc(g.cols[1]||'')}</span><span>${esc(g.cols[2]||'')}</span></div>`:'';
+      ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div>${colBar}<div class="ws-body">${g.tasks.map(taskHTML).join("")}</div>`;
       ws.querySelector(".ws-hd").addEventListener("click",()=>ws.classList.toggle("collapsed"));
       host.appendChild(ws);
     });
@@ -809,7 +822,7 @@ function renderEditor(){
             <button class="iconbtn del" title="Delete workstream" data-act="delgrp" data-g="${gi}">✕</button>
           </div>
         </div>
-        <div class="ed-rows" data-gi="${gi}">${colHeaderHTML()}${g.tasks.map((t,ti)=>rowHTML(gi,ti,t,stateOpts)).join("")}</div>
+        <div class="ed-rows" data-gi="${gi}">${colHeaderHTML(gi,g.cols)}${g.tasks.map((t,ti)=>rowHTML(gi,ti,t,stateOpts)).join("")}</div>
         <div class="ed-addrow"><button class="addbtn" data-act="addrow" data-g="${gi}">+ Add task</button></div>`;
       body.appendChild(grp);
       g.tasks.forEach((t,ti)=>{const s=grp.querySelector(`select[data-g="${gi}"][data-t="${ti}"][data-k="state"]`);if(s)s.value=t.state;});
@@ -838,7 +851,7 @@ function renderEditor(){
               <button class="iconbtn" title="Move down" data-act="down" data-g="${pgi}" data-cm="${prevM.id}">↓</button>
             </div>
           </div>
-          <div class="ed-rows">${colHeaderHTML()}${carryTasks.map(({t,pti})=>carryRowHTML(prevM.id,pgi,pti,t,stateOpts)).join("")}</div>
+          <div class="ed-rows">${colHeaderHTML(pgi,pg.cols)}${carryTasks.map(({t,pti})=>carryRowHTML(prevM.id,pgi,pti,t,stateOpts)).join("")}</div>
           <div class="ed-addrow"><button class="addbtn" data-act="addrow-carry" data-plat="${esc(cg.platform)}" data-ws="${esc(cg.ws)}">+ Add new ${curLabel()} task here</button></div>`;
         body.appendChild(cgrp);
         carryTasks.forEach(({t,pti})=>{
@@ -851,17 +864,10 @@ function renderEditor(){
     root.appendChild(tile);
   });
 }
-function colHeaderHTML(){
-  return `<div class="ed-col-hd">
-    <span>Task / Client</span>
-    <span>Details</span>
-    <span>Status Note</span>
-    <span>State · ETA</span>
-    <span>OTS (₹)</span>
-    <span>MRR (₹) · Users</span>
-    <span>Misc / Notes</span>
-    <span></span>
-  </div>`;
+function colHeaderHTML(gi,cols){
+  const c=cols||DEFAULT_COLS;
+  const inputs=c.map((lbl,ci)=>`<input data-g="${gi}" data-k="col" data-ci="${ci}" value="${esc(lbl)}" placeholder="Column heading">`).join("");
+  return `<div class="ed-col-hd">${inputs}<span></span></div>`;
 }
 function rowHTML(gi,ti,t,stateOpts){
   return `<div class="ed-row" draggable="false" data-gi="${gi}" data-ti="${ti}">
@@ -926,6 +932,7 @@ editGroups.addEventListener("input",e=>{
   if(!G)return;
   const gi=+el.dataset.g,k=el.dataset.k;
   if(el.dataset.t!==undefined){G[gi].tasks[+el.dataset.t][k]=el.value;}
+  else if(k==="col"){if(!G[gi].cols)G[gi].cols=DEFAULT_COLS.slice();G[gi].cols[+el.dataset.ci]=el.value;}
   else{G[gi][k]=el.value;if(k==="ws")G[gi].adhoc=/adhoc|ad-?on/i.test(el.value);}
   save();paintKPIs();paintMoney();render();renderRevenueTasks();
 });
