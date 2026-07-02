@@ -826,7 +826,8 @@ function rowHTML(gi,ti,t,stateOpts){
   return `<div class="ed-row" draggable="false" data-gi="${gi}" data-ti="${ti}">
     <div class="drag-handle" title="Drag to move to another workstream">⠇</div>
     <div><span class="field-cap lblrow">Task / client</span>
-      <input data-g="${gi}" data-t="${ti}" data-k="name" value="${esc(t.name)}" placeholder="Task or client"></div>
+      <input data-g="${gi}" data-t="${ti}" data-k="name" value="${esc(t.name)}" placeholder="Task or client">
+      <select style="margin-top:6px" data-g="${gi}" data-t="${ti}" data-k="segment"><option value="roadmap"${(t.segment||'roadmap')==='roadmap'?' selected':''}>Roadmap</option><option value="revenue"${t.segment==='revenue'?' selected':''}>Revenue</option></select></div>
     <div><span class="field-cap lblrow">Details</span>
       <textarea data-g="${gi}" data-t="${ti}" data-k="det" placeholder="Short detail">${esc(t.det)}</textarea></div>
     <div><span class="field-cap lblrow">Status note</span>
@@ -852,16 +853,15 @@ function carryRowHTML(prevMonthId,pgi,pti,t,stateOpts){
   return `<div class="ed-row" draggable="false" data-gi="${pgi}" data-ti="${pti}">
     <div style="align-self:start;padding-top:10px;color:var(--carry);font-size:13px" title="Editing updates ${prevMonthId}">↪</div>
     <div><span class="field-cap lblrow">Task / client</span>
-      <input data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="name" value="${esc(t.name)}" placeholder="Task or client"></div>
+      <input data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="name" value="${esc(t.name)}" placeholder="Task or client">
+      <select style="margin-top:6px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="segment"><option value="roadmap"${(t.segment||'roadmap')==='roadmap'?' selected':''}>Roadmap</option><option value="revenue"${t.segment==='revenue'?' selected':''}>Revenue</option></select></div>
     <div><span class="field-cap lblrow">Details</span>
       <textarea data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="det" placeholder="Short detail">${esc(t.det)}</textarea></div>
     <div><span class="field-cap lblrow">Status note</span>
       <textarea data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="status" placeholder="Free-text status">${esc(t.status)}</textarea></div>
     <div><span class="field-cap lblrow">State</span>
       <select data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="state">${stateOpts}</select>
-      <input style="margin-top:6px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="eta" value="${esc(t.eta||"")}" placeholder="ETA e.g. Jul 10">
-      <span class="field-cap lblrow" style="margin-top:8px;display:block">Section</span>
-      <select style="margin-top:4px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="segment"><option value="roadmap"${(t.segment||'roadmap')==='roadmap'?' selected':''}>Roadmap</option><option value="revenue"${t.segment==='revenue'?' selected':''}>Revenue</option></select></div>
+      <input style="margin-top:6px" data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="eta" value="${esc(t.eta||"")}" placeholder="ETA e.g. Jul 10"></div>
     <div><span class="field-cap lblrow">OTS (₹)</span>
       <input data-cm="${prevMonthId}" data-g="${pgi}" data-t="${pti}" data-k="ots" value="${esc(t.ots||"")}" placeholder="N/A" inputmode="decimal"></div>
     <div><span class="field-cap lblrow">MRR (₹)</span>
