@@ -1001,11 +1001,7 @@ document.getElementById("editToggle").addEventListener("click",()=>{
   document.body.classList.toggle("editing",editing);
   document.getElementById("editToggle").classList.toggle("on",editing);
   document.getElementById("editLabel").textContent=editing?"Done editing":"Edit data";
-  if(editing){
-    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab==="roadmap"));
-    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.toggle("active",p.id==="tab-roadmap"));
-    renderEditor();
-  }
+  if(editing)renderEditor();
 });
 
 /* ---------- month switcher ---------- */
