@@ -159,7 +159,7 @@
   .ws-inner{display:block}
   .ws.collapsed .ws-inner{display:none}
 
-  .task{display:grid;grid-template-columns:110px 1.2fr 1.5fr 1.3fr 110px 90px 100px 1fr;gap:0 14px;padding:13px 18px;border-bottom:1px solid var(--line);align-items:start;transition:.12s}
+  .task{display:grid;grid-template-columns:110px 1.2fr 1.5fr 1.3fr 130px 90px 100px 1fr;gap:0 14px;padding:13px 18px;border-bottom:1px solid var(--line);align-items:start;transition:.12s}
   .task:last-child{border-bottom:none}
   .task:hover{background:var(--panel-2)}
   .task .st{display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding-top:1px}
@@ -184,7 +184,7 @@
   .task .t-name{font-family:"Inter";font-weight:600;font-size:13px;margin-bottom:3px;color:var(--text);letter-spacing:-.1px}
   .task .t-det{color:var(--muted);font-size:12px;line-height:1.45}
   .task .t-status-col{color:var(--muted);font-size:12px;line-height:1.45}
-  .task .t-eta-col{font-size:11px;color:var(--muted)}
+  .task .t-eta-col{font-size:11px;color:var(--muted);white-space:normal}
   .task .t-ots{font-size:11px;color:var(--muted)}
   .task .t-mrr{font-size:11px;color:var(--muted)}
   .task .t-remark{font-size:12px;color:var(--muted);line-height:1.4}
@@ -257,7 +257,7 @@
   .ed-col-hd input:focus{border-color:var(--accent-bd)!important;background:var(--panel)!important;outline:none}
   @media(max-width:920px){.ed-col-hd{display:none}}
   /* read-view: workstream column header bar */
-  .ws-col-hd{display:grid;grid-template-columns:110px 1.2fr 1.5fr 1.3fr 110px 90px 100px 1fr;gap:0 14px;padding:6px 18px;background:var(--panel-3);border-bottom:1px solid var(--line-2)}
+  .ws-col-hd{display:grid;grid-template-columns:110px 1.2fr 1.5fr 1.3fr 130px 90px 100px 1fr;gap:0 14px;padding:6px 18px;background:var(--panel-3);border-bottom:1px solid var(--line-2)}
   .ws-col-hd span{font-family:"Inter";font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   @media(max-width:820px){.ws-col-hd{display:none}}
   .ed-row{display:grid;grid-template-columns:135px 1.2fr 1.3fr 115px 105px 1.2fr 110px 34px;gap:9px;padding:10px 16px 10px 28px;border-bottom:1px solid var(--line);align-items:start;position:relative}
@@ -781,7 +781,7 @@ function wsTasksHTML(g){
   const hasMrr=g.tasks.some(t=>money(t.mrr)!==null);
   const hasRemark=g.tasks.some(t=>t.misc&&t.misc.trim());
   // fixed cols: badge(110px) client(1.2fr) details(1.5fr) status(1.3fr) eta(110px)
-  let gridCols="110px 1.2fr 1.5fr 1.3fr 110px";
+  let gridCols="110px 1.2fr 1.5fr 1.3fr 130px";
   if(hasOts) gridCols+=" 90px";
   if(hasMrr) gridCols+=" 100px";
   if(hasRemark) gridCols+=" 1fr";
