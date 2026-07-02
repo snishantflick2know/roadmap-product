@@ -278,6 +278,7 @@
         <select id="monthSel" class="month-sel"></select>
         <button id="addMonth" class="mp-add" title="Add a new month">+</button>
       </div>
+      <span id="month-note-hd" style="font-family:'Inter';font-size:11px;font-weight:500;color:var(--dim);display:none"></span>
       <div class="editToggle" id="editToggle" title="Toggle data editing">
         <span class="sw"></span><span id="editLabel">Edit data</span>
       </div>
@@ -994,7 +995,8 @@ function syncMonthUI(){
   sel.innerHTML=MONTHS.map(m=>`<option value="${m.id}">${esc(m.label)}</option>`).join("");
   sel.value=curMonth;
   const note=document.getElementById("month-note");
-  if(note){const notes={"2026-06":"14th June onwards"};const txt=notes[curMonth]||"";note.textContent=txt?`— ${txt}`:"";
+  const noteHd=document.getElementById("month-note-hd");
+  if(note){const notes={"2026-06":"14th June onwards"};const txt=notes[curMonth]||"";note.textContent=txt?`— ${txt}`:"";if(noteHd){noteHd.textContent=txt||``;noteHd.style.display=txt?"inline":"none";}
   note.classList.toggle("show",!!txt);}
 }
 document.getElementById("monthSel").addEventListener("change",e=>{
