@@ -113,6 +113,12 @@
   .mtag.cf{color:var(--dim);background:transparent;border:1px solid var(--line-2)}
   .mtag.tm{color:var(--text);background:var(--panel-2);border:1px solid var(--line-2)}
   .mhint{font-family:"Inter";font-size:11px;color:var(--dim);margin-top:10px}
+  .tab-bar{display:flex;gap:0;border-bottom:2px solid var(--line-2);margin:28px 0 0}
+  .tab-btn{font-family:"Inter";font-size:14px;font-weight:600;padding:13px 26px;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;letter-spacing:-.1px}
+  .tab-btn.active{color:var(--text);border-bottom-color:var(--accent)}
+  .tab-btn:hover:not(.active){color:var(--text)}
+  .tab-panel{display:none}
+  .tab-panel.active{display:block}
   .sec-hd{display:flex;align-items:center;gap:14px;margin:28px 0 14px}
   .sec-lbl{font-family:"Inter";font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--dim);white-space:nowrap}
   .sec-hd::after{content:"";flex:1;height:1px;background:var(--line-2)}
@@ -289,72 +295,83 @@
 <div class="wrap">
   <div class="top">
     <div class="kicker">Internal · Leadership View</div>
-    <h1>Pulse Product &amp; Delivery Status</h1>
-    <p class="sub">Live delivery status across Web and App workstreams — what shipped, what's in progress, spilled tasks, and the revenue snapshot for this cycle.</p>
+    <h1>Pulse Product &amp; Revenue Dashboard</h1>
+    <p class="sub">Roadmap delivery status and revenue snapshot across Web &amp; App — what shipped, what's in progress, and cumulative financials.</p>
     <p class="month-note" id="month-note"></p>
   </div>
 
-  <div class="sec-hd"><span class="sec-lbl">Delivery status</span></div>
-  <div class="kpis" id="kpis">
-    <div class="kpi k-all active" data-f="all"><span class="bar"></span><div class="n" id="c-all">0</div><div class="l">Total tasks</div></div>
-    <div class="kpi k-done" data-f="done"><span class="bar"></span><div class="n" id="c-done">0</div><div class="l">Done</div></div>
-    <div class="kpi k-prog" data-f="prog"><span class="bar"></span><div class="n" id="c-prog">0</div><div class="l">In progress</div></div>
-    <div class="kpi k-spill" data-f="spill"><span class="bar"></span><div class="n" id="c-spill">0</div><div class="l">Spilled</div></div>
-    <div class="kpi k-road" data-f="road"><span class="bar"></span><div class="n" id="c-road">0</div><div class="l">Roadmap / future</div></div>
-    <div class="kpi k-adhoc" data-f="adhoc"><span class="bar"></span><div class="n" id="c-adhoc">0</div><div class="l">Adhoc done</div></div>
-    <div class="kpi k-parked" data-f="parked"><span class="bar"></span><div class="n" id="c-parked">0</div><div class="l">Parked</div></div>
-    <div class="kpi k-carry" data-f="carry"><span class="bar"></span><div class="n" id="c-carry">0</div><div class="l">Carried in</div></div>
+  <!-- ===== TAB BAR ===== -->
+  <div class="tab-bar">
+    <button class="tab-btn" data-tab="roadmap">Roadmap</button>
+    <button class="tab-btn active" data-tab="revenue">Revenue</button>
   </div>
 
-  <div class="meter">
-    <span class="lab">Month completion</span>
-    <div class="track" id="track"></div>
-    <span class="pct" id="pct">0%</span>
-  </div>
-
-  <div class="sec-hd" style="margin-top:22px"><span class="sec-lbl">Financial snapshot · cumulative</span></div>
-  <!-- money summary (cumulative across months) -->
-  <div class="money" id="money">
-    <div class="mcard m-ots">
-      <div class="mlbl">One-Time Setup (OTS)</div>
-      <div class="mval" id="m-ots">—</div>
-      <div class="mbreak">
-        <span class="mrow2"><span class="mtag tm">This month</span><span id="m-ots-tm">₹0</span></span>
+  <!-- ===== REVENUE TAB ===== -->
+  <div class="tab-panel active" id="tab-revenue">
+    <div class="sec-hd" style="margin-top:22px"><span class="sec-lbl">Financial snapshot · cumulative</span></div>
+    <div class="money" id="money">
+      <div class="mcard m-ots">
+        <div class="mlbl">One-Time Setup (OTS)</div>
+        <div class="mval" id="m-ots">—</div>
+        <div class="mbreak">
+          <span class="mrow2"><span class="mtag tm">This month</span><span id="m-ots-tm">₹0</span></span>
+        </div>
+        <div class="mhint" id="m-ots-h">0 priced</div>
       </div>
-      <div class="mhint" id="m-ots-h">0 priced</div>
-    </div>
-    <div class="mcard m-mrr">
-      <div class="mlbl">Monthly Recurring (MRR)</div>
-      <div class="mval" id="m-mrr">—</div>
-      <div class="mbreak">
-        <span class="mrow2"><span class="mtag tm">This month</span><span id="m-mrr-tm">₹0</span></span>
+      <div class="mcard m-mrr">
+        <div class="mlbl">Monthly Recurring (MRR)</div>
+        <div class="mval" id="m-mrr">—</div>
+        <div class="mbreak">
+          <span class="mrow2"><span class="mtag tm">This month</span><span id="m-mrr-tm">₹0</span></span>
+        </div>
+        <div class="mhint" id="m-mrr-h">0 priced</div>
       </div>
-      <div class="mhint" id="m-mrr-h">0 priced</div>
-    </div>
-    <div class="mcard m-arr">
-      <div class="mlbl">ARR · Projected to March 2027</div>
-      <div class="mval" id="m-arr">—</div>
-      <div class="mbreak">
-        <span class="mrow2"><span class="mtag tm">MRR×</span><span id="m-arr-months">0 mo</span></span>
+      <div class="mcard m-arr">
+        <div class="mlbl">ARR · Projected to March 2027</div>
+        <div class="mval" id="m-arr">—</div>
+        <div class="mbreak">
+          <span class="mrow2"><span class="mtag tm">MRR×</span><span id="m-arr-months">0 mo</span></span>
+        </div>
+        <div class="mhint" id="m-arr-h">cur MRR × remaining months + cum OTS</div>
       </div>
-      <div class="mhint" id="m-arr-h">cur MRR × remaining months + cum OTS</div>
     </div>
   </div>
 
-  <div class="sec-hd"><span class="sec-lbl">Workstream breakdown</span></div>
-  <!-- view controls -->
-  <div class="controls">
-    <div class="seg" id="platSeg">
-      <button class="on" data-p="all">All</button>
-      <button data-p="Web" class="web">Web</button>
-      <button data-p="App" class="app">App</button>
+  <!-- ===== ROADMAP TAB ===== -->
+  <div class="tab-panel" id="tab-roadmap">
+    <div class="sec-hd"><span class="sec-lbl">Delivery status</span></div>
+    <div class="kpis" id="kpis">
+      <div class="kpi k-all active" data-f="all"><span class="bar"></span><div class="n" id="c-all">0</div><div class="l">Total tasks</div></div>
+      <div class="kpi k-done" data-f="done"><span class="bar"></span><div class="n" id="c-done">0</div><div class="l">Done</div></div>
+      <div class="kpi k-prog" data-f="prog"><span class="bar"></span><div class="n" id="c-prog">0</div><div class="l">In progress</div></div>
+      <div class="kpi k-spill" data-f="spill"><span class="bar"></span><div class="n" id="c-spill">0</div><div class="l">Spilled</div></div>
+      <div class="kpi k-road" data-f="road"><span class="bar"></span><div class="n" id="c-road">0</div><div class="l">Roadmap / future</div></div>
+      <div class="kpi k-adhoc" data-f="adhoc"><span class="bar"></span><div class="n" id="c-adhoc">0</div><div class="l">Adhoc done</div></div>
+      <div class="kpi k-parked" data-f="parked"><span class="bar"></span><div class="n" id="c-parked">0</div><div class="l">Parked</div></div>
+      <div class="kpi k-carry" data-f="carry"><span class="bar"></span><div class="n" id="c-carry">0</div><div class="l">Carried in</div></div>
     </div>
-    <div class="search">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="text" placeholder="Search task, client or workstream…">
+    <div class="meter">
+      <span class="lab">Month completion</span>
+      <div class="track" id="track"></div>
+      <span class="pct" id="pct">0%</span>
     </div>
-    <button class="clearf" id="clear">Reset</button>
-  </div>
+    <div class="sec-hd"><span class="sec-lbl">Workstream breakdown</span></div>
+    <div class="controls">
+      <div class="seg" id="platSeg">
+        <button class="on" data-p="all">All</button>
+        <button data-p="Web" class="web">Web</button>
+        <button data-p="App" class="app">App</button>
+      </div>
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="text" placeholder="Search task, client or workstream…">
+      </div>
+      <button class="clearf" id="clear">Reset</button>
+    </div>
+
+    <div id="boards"></div>
+    <div class="empty" id="empty">No tasks match these filters.</div>
+  </div><!-- /tab-roadmap -->
 
   <!-- ============ EDIT PANEL ============ -->
   <div id="editPanel">
@@ -372,8 +389,6 @@
     <div id="editGroups"></div>
   </div>
 
-  <div id="boards"></div>
-  <div class="empty" id="empty">No tasks match these filters.</div>
 
   <footer>
     <div class="legend">
@@ -1021,6 +1036,15 @@ document.getElementById("addMonth").addEventListener("click",()=>{
   curMonth=id;
   save();syncMonthUI();refreshAll();
   if(editing)renderEditor();
+});
+
+/* ---------- tab switching ---------- */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const tab=btn.dataset.tab;
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b===btn));
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.toggle("active",p.id===`tab-${tab}`));
+  });
 });
 
 /* ---------- init ---------- */
