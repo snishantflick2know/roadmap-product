@@ -583,7 +583,8 @@ async function initApp(){
   if(!data)data=normalize(clone(MONTHS_SEED));
   MONTHS=data;
   curMonth=MONTHS[0].id;
-  syncMonthUI();paintKPIs();paintMoney();render();renderRevenueTasks();
+  try{syncMonthUI();paintKPIs();paintMoney();render();renderRevenueTasks();}
+  catch(e){console.error("Render crash:",e);document.getElementById("boards").innerHTML=`<div style="color:red;padding:20px;font-family:monospace">Render error: ${e.message}</div>`;}
 }
 function save(){
   try{localStorage.setItem(STORE_KEY,JSON.stringify(MONTHS));}catch(e){}
