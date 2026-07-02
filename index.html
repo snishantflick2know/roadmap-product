@@ -716,7 +716,7 @@ function renderRevenueTasks(){
       const mini=Object.entries(mc).filter(([,v])=>v).map(([k,v])=>`<b class="mb-${k}">${v} ${LABELS[k]}</b>`).join("");
       const ws=document.createElement("div");ws.className="ws";
       const cols2=g.cols||DEFAULT_COLS;
-      const colBar2=`<div class="ws-col-hd"><span>${esc(cols2[0]||'')}</span><span>${esc(cols2[1]||'')}</span><span>${esc(cols2[2]||'')}</span><span>${esc(cols2[3]||'')}</span><span>${esc(cols2[4]||'')}</span></div>`;
+      const colBar2=`<div class="ws-col-hd"><span></span><span>${esc(cols2[0]||'')}</span><span>${esc(cols2[1]||'')}</span><span>${esc(cols2[2]||'')}</span><span>${esc(cols2[3]||'')}</span></div>`;
       ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div><div class="ws-inner">${colBar2}<div class="ws-body">${g.tasks.map(taskHTML).join("")}</div></div>`;
       ws.querySelector(".ws-hd").addEventListener("click",()=>ws.classList.toggle("collapsed"));
       host.appendChild(ws);
@@ -754,7 +754,7 @@ function render(){
       const mini=Object.entries(mc).filter(([,v])=>v).map(([k,v])=>`<b class="mb-${k}">${v} ${LABELS[k]}</b>`).join("");
       const ws=document.createElement("div");ws.className="ws";
       const cols=g.cols||DEFAULT_COLS;
-      const colBar=`<div class="ws-col-hd"><span>${esc(cols[0]||'')}</span><span>${esc(cols[1]||'')}</span><span>${esc(cols[2]||'')}</span><span>${esc(cols[3]||'')}</span><span>${esc(cols[4]||'')}</span></div>`;
+      const colBar=`<div class="ws-col-hd"><span></span><span>${esc(cols[0]||'')}</span><span>${esc(cols[1]||'')}</span><span>${esc(cols[2]||'')}</span><span>${esc(cols[3]||'')}</span></div>`;
       ws.innerHTML=`<div class="ws-hd">${chevSVG()}<h3>${esc(g.ws)}</h3><div class="mini">${mini}</div></div><div class="ws-inner">${colBar}<div class="ws-body">${g.tasks.map(taskHTML).join("")}</div></div>`;
       ws.querySelector(".ws-hd").addEventListener("click",()=>ws.classList.toggle("collapsed"));
       host.appendChild(ws);
