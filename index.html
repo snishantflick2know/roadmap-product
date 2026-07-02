@@ -243,6 +243,9 @@
   .iconbtn:hover{color:var(--text)}
   .iconbtn.del:hover{color:var(--spill);border-color:var(--spill-bd)}
 
+  .ed-col-hd{display:grid;grid-template-columns:135px 1.2fr 1.3fr 115px 105px 1.2fr 110px 34px;gap:9px;padding:6px 16px 6px 28px;background:var(--panel-3);border-bottom:1px solid var(--line-2)}
+  .ed-col-hd span{font-family:"Inter";font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  @media(max-width:920px){.ed-col-hd{display:none}}
   .ed-row{display:grid;grid-template-columns:135px 1.2fr 1.3fr 115px 105px 1.2fr 110px 34px;gap:9px;padding:10px 16px 10px 28px;border-bottom:1px solid var(--line);align-items:start;position:relative}
   .ed-row:last-child{border-bottom:none}
   .ed-row .lblrow{display:none}
@@ -806,7 +809,7 @@ function renderEditor(){
             <button class="iconbtn del" title="Delete workstream" data-act="delgrp" data-g="${gi}">✕</button>
           </div>
         </div>
-        <div class="ed-rows" data-gi="${gi}">${g.tasks.map((t,ti)=>rowHTML(gi,ti,t,stateOpts)).join("")}</div>
+        <div class="ed-rows" data-gi="${gi}">${colHeaderHTML()}${g.tasks.map((t,ti)=>rowHTML(gi,ti,t,stateOpts)).join("")}</div>
         <div class="ed-addrow"><button class="addbtn" data-act="addrow" data-g="${gi}">+ Add task</button></div>`;
       body.appendChild(grp);
       g.tasks.forEach((t,ti)=>{const s=grp.querySelector(`select[data-g="${gi}"][data-t="${ti}"][data-k="state"]`);if(s)s.value=t.state;});
@@ -835,7 +838,7 @@ function renderEditor(){
               <button class="iconbtn" title="Move down" data-act="down" data-g="${pgi}" data-cm="${prevM.id}">↓</button>
             </div>
           </div>
-          <div class="ed-rows">${carryTasks.map(({t,pti})=>carryRowHTML(prevM.id,pgi,pti,t,stateOpts)).join("")}</div>
+          <div class="ed-rows">${colHeaderHTML()}${carryTasks.map(({t,pti})=>carryRowHTML(prevM.id,pgi,pti,t,stateOpts)).join("")}</div>
           <div class="ed-addrow"><button class="addbtn" data-act="addrow-carry" data-plat="${esc(cg.platform)}" data-ws="${esc(cg.ws)}">+ Add new ${curLabel()} task here</button></div>`;
         body.appendChild(cgrp);
         carryTasks.forEach(({t,pti})=>{
@@ -847,6 +850,18 @@ function renderEditor(){
 
     root.appendChild(tile);
   });
+}
+function colHeaderHTML(){
+  return `<div class="ed-col-hd">
+    <span>Task / Client</span>
+    <span>Details</span>
+    <span>Status Note</span>
+    <span>State · ETA</span>
+    <span>OTS (₹)</span>
+    <span>MRR (₹) · Users</span>
+    <span>Misc / Notes</span>
+    <span></span>
+  </div>`;
 }
 function rowHTML(gi,ti,t,stateOpts){
   return `<div class="ed-row" draggable="false" data-gi="${gi}" data-ti="${ti}">
