@@ -1071,7 +1071,7 @@ function syncMonthUI(){
   sel.value=curMonth;
   const note=document.getElementById("month-note");
   const noteHd=document.getElementById("month-note-hd");
-  if(note){const notes={"2026-06":"14th June onwards"};const txt=notes[curMonth]||"";note.textContent=txt?`— ${txt}`:"";if(noteHd){noteHd.textContent=txt||``;noteHd.style.display=txt?"inline":"none";}
+  if(note){const notes={"2026-06":"Mid June onwards"};const txt=notes[curMonth]||"";note.textContent=txt?`— ${txt}`:"";if(noteHd){noteHd.textContent=txt||``;noteHd.style.display=txt?"inline":"none";}
   note.classList.toggle("show",!!txt);}
 }
 document.getElementById("monthSel").addEventListener("change",e=>{
